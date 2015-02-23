@@ -1,11 +1,13 @@
-#!/bin/sh
-jvmtype=${2-"kaffelocal"}
+#!/bin/bash
+
+APPLETVIEWER=appletviewer
+
+jvmtype=${2-"jdk"}
 
 case $jvmtype in
     jdk)
     echo "sun jdk"
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/progs/javalibs
-    $JAVA_HOME/bin/appletviewer $1
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/progs/javalibs $APPLETVIEWER $1
     ;;
     kaffelocal)
     echo `/usr/local/kaffe/bin/kaffe -version`
@@ -16,5 +18,3 @@ case $jvmtype in
     ;;
 esac
 
-
-    

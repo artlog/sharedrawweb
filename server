@@ -7,33 +7,11 @@ then
     exit 1
 fi
 
-jvmtype=${2-"kaffelocal"}
 JARPROG=ShareDraw.jar
 MAINCLASS=lasnier.sharedraw.ShareDrawServer
 
-case $jvmtype in
-    jdk)
-    echo "using sun jdk"
-    if test -z $JAVA_HOME
-    then
-	echo "please set JAVA_HOME"
-	exit
-    fi
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/progs/javalibs
-    JAVAPROG="$JAVA_HOME/bin/java -classpath $JARPROG -Djava.security.policy=java.policy"
-    ;;
-
-    "kaffegcj")
-    JAVAPROG="kaffe -classpath /usr/share/java/libgcj.jar:$JARPROG"
-    ;;
-
-    "kaffelocal")
-    echo `/usr/local/kaffe/bin/kaffe -version`
-    JAVAPROG="/usr/local/kaffe/bin/java -classpath /usr/local/kaffe/jre/lib/rt.jar:$JARPROG"
-    ;;
-esac
-
-$JAVAPROG $MAINCLASS $drawserver
+#LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/progs/javalib/
+java -jar $JARPROG -Djava.security.policy=java.policy $MAINCLASS $drawserver
 
 
 
