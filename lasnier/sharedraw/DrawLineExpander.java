@@ -74,10 +74,10 @@ public class DrawLineExpander {
     int index;
 
     /* 11 : next, 10 : previous ; 0* : same
-        6 -> 14
-        ^    |
-        |    v
-        3 <- 64
+        6 -> 14->30
+        ^        |
+        |        v
+        3   <-  64
     */
     // find index of current size
     for ( index = 0; index < SCODE_MAX; index ++) {
@@ -111,6 +111,7 @@ public class DrawLineExpander {
       point.y = fieldReader.read(32);
     }
     else {
+	boolean nocenter=false;
       codeval = fieldReader.read( size); 
       // System.out.println( codeval);
       /* 
@@ -119,19 +120,25 @@ public class DrawLineExpander {
       */
       if ( size == 3 ) {
         max = 3;
+	center = 1;
+	nocenter=true;
       }
       else {
-        max = ( 1 << (  size  / 2  ) ) - 1;
+        max = ( 1 << (  size  / 2  ) );
+	center = (max / 2) - 1;
       }
-      center = max / 2;            
-      // central hole impossible
-      if ( codeval >= ( center * (max + 1)) ) {
-        codeval ++;
-      }
-      if ( codeval >= ( max * max  )) {
-        System.out.println(
-          "!!! reserved value for decompression should not occur !!!");
-      }      
+      // central hole impossible but we don't really care
+      if ( nocenter )
+	  {
+
+	      if ( codeval > ( center * max  ) ) {
+		  codeval ++;
+	      }
+	      if ( codeval >= ( max * max  )) {
+		  System.out.println(
+				     "!!! reserved value for decompression should not occur !!!");
+	      }
+	  }
       point.x = ( codeval  %  max) - center;
       point.y = ( codeval   / max) - center;
       // System.out.println( point.toString());

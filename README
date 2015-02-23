@@ -11,10 +11,11 @@ It can be use to quickly share drawing or to have a minimal graphical irc...
 -------------------------------------------------------------------------------------------------------------
 
 ENVIRONMENT:
-this project was tested under GNU/Linux Debian 2.2.
+initialy this project was tested under GNU/Linux Debian 2.2.
 with latest CVS of kaffe machine installed in default directory /usr/local/kaffe.
 and with gcj (apt-get install gcj )
 
+Update : openjdk 6 
 
 TO BUILT IT:
 ------------

@@ -45,30 +45,64 @@ public class DrawLineKompressor {
 
   public void kompress( OutputStream output ) throws java.io.IOException {
     fieldWriter.setOutputStream( output);
+    int skipsame=0;
+    
+    if ( ( fromLines != null) && ( fromLines.size() > 0)) {
+	Point topoint = null;
+	for ( int i = 1; i < fromLines.size(); i++) {
+	    Point frompoint = (Point) fromLines.elementAt( i);
+	    if ( ( topoint != null )  && ( topoint.x == frompoint.x ) && ( topoint.y == frompoint.y ) )
+		{
+		    skipsame ++;
+		}
+	    topoint=frompoint;
+	}
+	if ( skipsame > 0 )
+	    {
+		System.out.println("[WARNING] lines contains " + skipsame + " duplicates points");
+	    }
+    }
+
     if ( ( fromLines != null) && ( fromLines.size() > 0)) {
       Point frompoint = (Point) fromLines.elementAt(0);
       Point point, topoint;
       topoint = new Point();
       int x, y, center, size;
-      fieldWriter.write( fromLines.size(), 32);
+      fieldWriter.write( fromLines.size() - skipsame, 32);
       writeAbs( frompoint, 64);
       for ( int i = 1; i < fromLines.size(); i++) {
         point = (Point) fromLines.elementAt( i);
         topoint.x = point.x - frompoint.x;
         topoint.y = point.y - frompoint.y;
         // find wich size to use...
+	if (( topoint.x == 0 ) && ( topoint.y == 0 ))
+	    {
+		// ARGH THIS IS INVALID !
+	      System.out.println("[ERROR] (0,0) point is invalid for compression !!!");
+	      continue;
+	    }
         if ( (Math.abs( topoint.x) < 2) && (Math.abs(topoint.y) < 2)) {
           writeRel( topoint, 3);
         }
         else {
           size = 64;
           for ( int index = 1; index < ( SCODE_MAX - 1 ); index ++) {
-            center = ( ( 1 << (  scode[index]  / 2 ) ) - 1 ) / 2;
+	      /* center = ( ( 1 << (  scode[index]  / 2 ) ) - 1 ) / 2;
             if ( (Math.abs(topoint.x) <= center)
               && (Math.abs(topoint.y) <= center))
             {                          
               size = scode[index];
             }
+	      */
+	      // center is biased there are more + than - , ex for 6bits :(x,y) within ( -3,4 ) x (-3,4)
+	      center = 1 << ( (  scode[index]  / 2 )  - 1 );
+	      if ( ( topoint.x <= center  ) && ( topoint.x > -center )
+		   && ( topoint.y <= center  ) && ( topoint.y > -center ) )
+		  {
+		      size = scode[index];
+		      // always take the smaller size.
+		      break; 
+		  }
           }
           if ( size < 32 ) {
             writeRel( topoint, size);
@@ -119,7 +153,7 @@ public class DrawLineKompressor {
          0--<--pindex===>==cindex---<---SCODE_MAX
          */
          if ( ((SCODE_MAX - cindex) + pindex ) > ( pindex - cindex ) ) {
-           // ( pindex - cindex ) fois next
+           // ( pindex - cindex ) times next
            for ( ; pindex < cindex; pindex ++) {
              fieldWriter.write( 3,2);
            }
@@ -153,7 +187,7 @@ public class DrawLineKompressor {
       }
     }  
     // this is good size.
-    fieldWriter.write( 0,1);  
+    fieldWriter.write( 0,1);
     writeAbs( point, size);
   }
 
@@ -169,10 +203,11 @@ public class DrawLineKompressor {
       fieldWriter.write( point.y, 32);
     }
     else {
+	boolean nocenter = false;
       /*  size == 3 example :
            X - >
          Y 0 1 2
-         | 3 . 4
+         | 3 . 4-
          v 5 6 7
          specific application of general case bellow.
       */
@@ -189,25 +224,28 @@ public class DrawLineKompressor {
 2       */
       if ( size == 3 ) {
         max = 3;
+	center = 1;
+	nocenter = true;
       }
       else {
-        // need an odd number to provide a center
-        max = ( 1 << (  size  / 2 ) ) - 1;
+        max = ( 1 << (  size  / 2 ) );
+	// biased center ( -center +1, center )
+	center = (max / 2) - 1;
       }
-      center = max / 2;
       /*
       System.out.println( "size" + Integer.toString( size));
       System.out.println( "max, center " + Integer.toString( max) + " " + Integer.toString( center));
       System.out.println( "x, y " + Integer.toString( point.x) + " " + Integer.toString( point.y));
       */
       codeval = point.x + center +  (( point.y + center ) * max );
-      // central hole impossible
-      if ( codeval == ( center * (max + 1) ) ) {
-         System.out.println(
-           "!!! warning (0,0) point is invalid for compression !!!");
-      }
-      if ( codeval > (center * ( max + 1 ))  ){
-        codeval --;
+      // central hole impossible BUT we should not really care ( in fact whole center square is impossible since covered by encoding with lower number of bits ) , avoid it only for size 3.
+      if (nocenter) {
+	  if ( codeval == ( center * max  ) + 1 ) {
+	      System.out.println("!!! warning (0,0) point is invalid for compression !!!");
+	  }
+	  if ( codeval > (center * max)  ){
+	      codeval --;
+	  }
       }
       // System.out.println( "code " + Integer.toString( codeval));
       fieldWriter.write( codeval, size);
