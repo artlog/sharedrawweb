@@ -1,0 +1,123 @@
+=================================================================
+THIS TODO is quite USELESS as it contains two years old thoughs...
+=================================================================
+- Make Server a Servlet.
+- Add A Graphical interface to give a name to file saved / load
+- Automatic Save.
+ * Thresholds
+number of ShareDrawLine
+number of Points
+number of bytes
+
+surface filled :
+Given a line as a width of 1 pixel
+fractal surface is then sum of length of vectors less number of intersections.
+sum of length of vectors is then a maximizer
+of surface. a vector can't intercept more than all previous vectors already
+printed. then number of intersections can't be more than
+S [O..n,i] ( S [0..i-1,j] j) < (( n - 1) ^ 3 ) / 2
+where n is number of vectors. given rapid growth of n^3 a minimizer of fractal
+surface is not easy to find.
+[ we eliminate in this case equipotent vectors that intersects on a
+vector...]
+To approximate number of intersections we can use bounds intersections...
+
+I decide to use maximizer function that do sum of length of vectors = Msurf
+maximum of true surface filleable is width * height.
+user set a threshold in percent of this surface for Msurf.
+This threshold can exceed 100% given Msurf is a maximizer of surface, but it
+is not a good idea to set it to more than 100% i think ( you will accept very
+dark images ).
+With a threshold set images with no intersection can't fill more than real
+percentage of surface, images with intersections will fill less than this
+percentage; then this percentage is really a maximum fillable surface.
+40% seems for me a good compromise.
+
+System of pluggable Policy :
+- force save
+- reset image or compress image to go bellow threshold.
+
+Problem / scenario
+adding a line to image
+image has reached surface threshold 
+save it
+suppress first line
+adding a line to image
+adding a line to image
+image has reached surface thresold
+don't save it as we have already saved quasi identical image previously !
+suppress first line.
+
+=> Then an information need to point when image need to be saved.
+An image need to be saved when we wan't to suppress a line we didn't already
+save.
+Then saving is not done by Threshold Policy ( that just do discarding ) but by
+a KeepTrack Policy.
+KeepTrack Policy should have
+number of files limits
+naming conventions
+allowing round buffer ( reusing older files when maximal number of files is
+reached )
+
+Hysteris problems :
+when a thresold is continuously meet there is a hysteresis problem.
+In our case image modification ( reduction ) should be by an amount that
+reduce hysteris.
+
+What need a Threshold Policy to work ?
+functions
+- to be advertised when a line is added / removed.
+- to control removing or reworking of lines over an Image.
+- to set heuristics values to lines.
+Q: can heuristics be computed on client side ?
+settings
+- internal threshold value
+
+What need a KeepTrack Policy to work ?
+functions
+- to be advertised when a line is added (tag new) / removed
+- to acces whole Image to save it.
+- to set tag (new or saved) to all lines.
+settings
+- directory used
+- prefix naming
+- number of files
+* Add time and date on files.
+
+- limit expansion of images ( set bounds for images parts ).
+usefull for surface filled threshold and for limiting netword traffic to a
+limited size.
+Full view will be in fact a patchwork of images of same size, setting no
+limits to full view ! This allow round view ( top <-> bottom, left <-> right )
+
+
+- Use compression over RMI ( WriteObject Kompress, ReadObject Expand)
+- Use Compression over Servlet Client !
+
+----------------------------------------------------------------------------------------
+
+split image into little pieces.
+
+hierachical view :
+Tree view, width first run.
+( root,(m, child), (m, child), ..)
+( ImageRef ,(Matrix, ImageRef), (Matrix, ImageRef), ..)
+Matrix : used to transform child coordinates into root coordinates.
+coordinates of images are integer in a fixed range ( [0..MaxX], [0..MaxY])
+
+
+=================================================
+
+2002 
+After 2 years of sleep the dragon goes out.
+
+
+
+
+
+
+
+
+
+
+

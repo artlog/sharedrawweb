@@ -1,0 +1,20 @@
+#!/bin/sh
+jvmtype=${2-"kaffelocal"}
+
+case $jvmtype in
+    jdk)
+    echo "sun jdk"
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/progs/javalibs
+    $JAVA_HOME/bin/appletviewer $1
+    ;;
+    kaffelocal)
+    echo `/usr/local/kaffe/bin/kaffe -version`
+    /usr/local/kaffe/bin/kaffe -classpath /usr/local/kaffe/jre/lib/rt.jar:ShareDraw.jar  kaffe.applet.AppletViewer $1
+    ;;
+    *)
+    echo "other"
+    ;;
+esac
+
+
+    
