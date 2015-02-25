@@ -1,6 +1,8 @@
 WHAT THIS PROJECT INTENDED TO DO:
 --------------------------------
 
+THIS README is obsolete, should be reviewed since forked from savannaa to github ( both projects are mine anyway ).
+
 ShareDrawWeb is released under the GPL license terms.
 
 It provide a server for many client to share a same basic black and white vector based drawing.
@@ -21,10 +23,11 @@ TO BUILT IT:
 ------------
 
 PREREQUISITE
-gcj ( part of gcc 3 ) for compiling
+# Not true anymore gcj ( part of gcc 3 ) for compiling
 
-as usual:
-make
+INSTALL
+./init.sh
+./doit.sh
 
 ( there is currently not install you have to run it from this directory or copy ShareDraw.jar ... )
 

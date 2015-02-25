@@ -23,7 +23,7 @@ cat >$htmlfile <<EOF
   <body>
       <h1>Draw Test (1.1)</h1>
       <hr>
-      <applet archive="ShareDraw.jar" code="lasnier.sharedraw.ShareDrawingEditor.class" width=400
+      <applet archive="dist/lib/sharedrawweb-0.0.1.jar" code="lasnier.sharedraw.ShareDrawingEditor.class" width=400
 height=400>
       <param name=drawServer value=$serveraddress>
       <param name=drawPort value=$serverport>

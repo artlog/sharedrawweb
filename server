@@ -7,12 +7,9 @@ then
     exit 1
 fi
 
-JARPROG=ShareDraw.jar
+JARPROG=dist/lib/sharedrawweb-0.0.1.jar
 MAINCLASS=lasnier.sharedraw.ShareDrawServer
 
 #LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/progs/javalib/
 java -jar $JARPROG -Djava.security.policy=java.policy $MAINCLASS $drawserver
-
-
-
 
