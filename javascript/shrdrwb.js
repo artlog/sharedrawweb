@@ -9,8 +9,17 @@ function record(thisline) {
 	if ( debugcontent) { alert(output_chunk(compressed)); };
 	var intbuffer=tobytestream(compressed);
 	if ( debugcontent) {alert(output_int(intbuffer));};
+	var fieldreader=null;
+	if ( debugcontent)
+	{
+	    fieldreader=frombytestream(intbuffer,compressed);
+	}
+	else
+	{
+	    fieldreader=frombytestream(intbuffer);
+	}
 	thisline=[];
-	thisline=do_expand(compressed);
+	thisline=do_expand(fieldreader);
 	if ( debugcontent) { alert(output_line(thisline)); };
 	if (thisline.length > 0)
 	{
@@ -75,7 +84,6 @@ function output_int( intArray )
 	}
     }
     return output_text;
-
 }
 
 function output_chunk( fromChunks )
@@ -119,7 +127,6 @@ function do_compress( fromLines )
 	frompoint = fromLines[0];
 	topoint={x:0,y:0};
 	var newlength=(fromLines.length - skipsame);
-	// fieldWriter.push( {size: 32, code: newlength});
 	writeAbs( frompoint, 64);
 	for ( var i=1; i < fromLines.length; i++) {
             thispoint = fromLines[i];
@@ -183,9 +190,6 @@ function writeAbs( thispoint, thissize) {
 	}
 	codeval = thispoint.x + center +  (( thispoint.y + center ) * max );
 	if (nocenter) {
-	    if ( codeval == ( center * max  ) + 1 ) {
-		document.write("<br>warning (0,0) point is invalid for compression !!!");
-	    }
 	    if ( codeval > (center * max)  ){
 		codeval --;
 	    }
@@ -210,12 +214,12 @@ function writeRel( thispoint, thissize) {
 	    if ( pindex < cindex ) {
 		if ( ((SCODE_MAX - cindex) + pindex ) > ( pindex - cindex ) ) {
 		    for ( ; pindex < cindex; pindex ++) {
-			fieldWriter.push( 3,2);
+			fieldWriter.push( {code:3,size:2});
 		    }
 		}
 		else {
 		    for ( pindex = SCODE_MAX - cindex + pindex; pindex > 0; pindex --) {
-			fieldWriter.push( 2,2);
+			fieldWriter.push( {code:2,size:2});
 		    }
 		}
 	    }
@@ -226,7 +230,6 @@ function writeRel( thispoint, thissize) {
 		    }
 		}
 		else {
-		    // ((SCODE_MAX - pindex) + cindex ) fois next
 		    for ( pindex = SCODE_MAX - pindex + cindex; pindex > 0; pindex --)
 		    {
 			fieldWriter.push( {code:3,size:2});
@@ -235,6 +238,7 @@ function writeRel( thispoint, thissize) {
 	    }
 	}  
 	fieldWriter.push( {code:0,size:1});
+	previousSize=thissize;
     }
     writeAbs( thispoint, thissize);
 }
@@ -290,7 +294,8 @@ function tobytestream(fieldReader)
 	    }
 	}
 	writestream(bstream,0,1);
-	writestream(bstream,chunk.code,chunk.size);
+	writestream(bstream,chunk.code,thissize);
+	previousSize=thissize;
     }
     padToWord(bstream);
     return bstream.buffer;
@@ -299,6 +304,11 @@ function tobytestream(fieldReader)
 function newbstream()
 {
     return {bitOffset:0,nextWord:0,buffer:[]};
+}
+
+function newbstreamread()
+{
+    return {bitOffset:0,currentWord:0};
 }
 
 function writestream( bstream, field, bits)
@@ -331,24 +341,8 @@ function writestream( bstream, field, bits)
     }
 }
 
-// big endian, MSB first.
-function writeInt(i)
-{
-//    long j = i;
-//    byte bytes[]=new byte[4];
-//    bytes[0] = (byte) ((j & 0xFF000000) >> 24);
-//    bytes[1] = (byte) ((j & 0x00FF0000) >> 16);
-//    bytes[2] = (byte) ((j & 0x0000FF00) >> 8);
-//    bytes[3] = (byte) (j & 0x000000FF);
-    //    outputStream.write( bytes, 0, 4);
-    return
-}
-
-
 function newWord(bstream)
 {
-    // do really write current word;
-    //writeInt(bstream.nextWord);
     bstream.buffer.push(bstream.nextWord);
     bstream.bitOffset = 0;
     bstream.nextWord = 0;
@@ -365,55 +359,104 @@ function padToWord(bstream)
     }
 }
 
+function frombytestream(intArray,checkArray)
+{
+    var fieldWriter = [];
+    var bstream=newbstreamread()
+    var npts = readstreambits(bstream,32,intArray);
+    // read first point
+    fieldWriter.push({code:readstreambits(bstream,32,intArray),size:32});
+    fieldWriter.push({code:readstreambits(bstream,32,intArray),size:32});
+    var currentsize=64;
+    for (var point=0; point < (npts-1); point ++)
+    {
+	var index;
+	var codeval=0;
+	for ( index = 0; index < SCODE_MAX; index ++) {
+	    if ( scode[index] == currentsize ) break;
+	}
+	while ( readstreambits( bstream, 1, intArray) != 0 ) {
+	    if (  readstreambits( bstream, 1, intArray) == 0 )
+	    {
+		index --;
+	    }
+	    else
+	    {
+		index++;
+	    }
+	    if ( index > SCODE_MAX ) {
+		index = 0;
+	    }
+	    if ( index < 0 ) {
+		index = SCODE_MAX;
+	    }
+	}
+	currentsize=scode[index];
+	if ( checkArray )
+	{
+	    var chunk=checkArray[2+point];
+	    if ( chunk.size != currentsize )
+	    {
+		alert("[" + point + "] (size=" + currentsize + ",code=#undef != " + "(size=" + chunk.size + ",code=" + chunk.code + "),(offset=" + bstream.bitOffset + ",word=" + bstream.currentWord + ")");
+		return fieldWriter;
+	    }
+	    codeval=readstreambits(bstream, currentsize, intArray);
+	    if ( ( chunk.code != codeval ) )
+	    {
+		alert("[" + point + "] (size=" + currentsize + ",code=" + codeval + ") != " + "(size=" + chunk.size + ",code=" + chunk.code + ")(offset="  + bstream.bitOffset + ",word=" + bstream.currentWord + ")");
+		return fieldWriter;
+	    }
+	}
+	else
+	{
+	    codeval=readstreambits(bstream, currentsize, intArray);
+	}
+	fieldWriter.push({code:codeval,size:currentsize});
 
-/*
-Decompressor
-
-TODO : readstream.
-
-  public Vector expand( InputStream input ) throws java.io.IOException {
-    fieldReader.setInputStream( input);
-    int point_count = fieldReader.read( 32);
-    // System.out.println( point_count);
-    expandedLines.addElement( readAbs( 64));
-    for ( int i = 1; i < point_count; i ++ ) {
-      Point point = readRel();
-      if ( currentSize == 64 ) {
-        // absolute
-        expandedLines.addElement( point);
-      }
-      else {
-        // relative
-        Point previous = (Point) expandedLines.lastElement();
-        point.x = point.x + previous.x;
-        point.y = point.y + previous.y;
-        expandedLines.addElement( point);
-      }
     }
-    return expandedLines;
-  }
+    readPadToWord(bstream,intArray);
+    return fieldWriter;
+}
 
-  private Point readRel() throws java.io.IOException {
 
-    int index;
-    for ( index = 0; index < SCODE_MAX; index ++) {
-      if ( scode[index] == currentSize ) break;
+function readstreambits(bstream, bits, intArray) {
+    var field = 0;
+    var head = 0;
+    if ( bstream.bitOffset == 0 ) {
+	nextWord(bstream, intArray);
     }
-
-    // read size modifier until it is good one
-    while ( fieldReader.read(1) != 0 ) {
-      index = index + ( ( fieldReader.read(1) == 0 ) ? -1 : 1);
-      // handle circularity
-      if ( index > SCODE_MAX ) {
-        index = 0;
-      }
-      if ( index < 0 ) {
-        index = SCODE_MAX;
-      }
+    if ( bits  + bstream.bitOffset > DATAWORDSIZE) {
+	var bitsize = DATAWORDSIZE - bstream.bitOffset;
+	head = readstreambits(bstream, DATAWORDSIZE - bstream.bitOffset, intArray);
+	field = readstreambits(bstream, bits - bitsize, intArray);
+	field = field | ( head << (bits - bitsize));
     }
-    return readAbs( scode[index]);
-  }
-*/
+    else {
+	if ( bits == DATAWORDSIZE) {
+            field = bstream.currentWord;
+            bstream.currentWord = 0;
+            bstream.bitOffset = 0;
+	}
+	else {       
+            field = ( bstream.currentWord >> ( DATAWORDSIZE - bits) )
+		& ( UNSIGNEDWORDMAX >> ( DATAWORDSIZE - 1 - bits) );
+            bstream.currentWord <<= bits;
+            bstream.bitOffset = ( bstream.bitOffset + bits ) % DATAWORDSIZE;
+	}
+    }
+    return field;  
+} 
+
+function nextWord(bstream, intArray) {
+    bstream.currentWord=intArray.shift();
+    bstream.bitOffset=0;
+}
+
+function readPadToWord(bstream, intArray) {
+    if ( bstream.bitOffset != 0) {
+	nextWord(bstream, intArray);
+    }
+}
 
 function do_expand( fieldReader )
 {
@@ -427,7 +470,6 @@ function do_expand( fieldReader )
 	    i=i+1;
 	    chunk=fieldReader[i];
 	    thispoint.y = chunk.code;
-
 	}
 	else
 	{
