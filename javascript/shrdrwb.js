@@ -61,11 +61,10 @@ function drawrequest(xmlhttprequest) {
     var intbuffer=convertArrayBufferToInt32BE(arraybuffer);
 
     var lines = intbuffer.shift();
-    // FIXME should read one line after the other within loop.
-    var fieldreader=frombytestream(intbuffer);
     
     for (l=0; l<lines;l++)
     {
+	var fieldreader=frombytestream(intbuffer);
 	thisline=do_expand(fieldreader);
 	if (thisline.length > 0)
 	{
@@ -460,7 +459,8 @@ function frombytestream(intArray,checkArray)
 	fieldWriter.push({code:codeval,size:currentsize});
 
     }
-    readPadToWord(bstream,intArray);
+    // current word in intArray is always consumed in advance, so no need of pad reading
+    // readPadToWord(bstream,intArray);
     return fieldWriter;
 }
 
