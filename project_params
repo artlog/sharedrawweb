@@ -5,3 +5,4 @@ project_mainpackage=lasnier.sharedraw
 project_mainclass=$project_mainpackage.ShareDrawServer
 project_version=0.0.1
 java_target=1.6
+default_args="localhost"

@@ -1,4 +1,30 @@
 <html>
   <script type="text/javascript" SRC="javascript/shrdrwb.js">
-    </script>
+  </script>
+  <script type="text/javascript" SRC="javascript/httprequest.js">
+  </script>
+  <body>
+     <form method="get" action="">
+        <table>
+            <tr>
+                <td>User Id:</td>
+                <td><input type="text" id="userId" name="userId" size="30" />
+                </td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" id="password" name="password"
+                    size="30" />
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="button" value="submit" onClick="XMLHttpRequestGetCompressedImage()" />
+                </td>
+            </tr>
+        </table>
+    </form>
+    
+    <div id="result">Test</id>
+  </body>
 </html>

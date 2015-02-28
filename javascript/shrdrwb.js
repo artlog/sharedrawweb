@@ -36,6 +36,52 @@ function record(thisline) {
     }
 }
 
+function convertArrayBufferToInt32BE(arraybuffer)
+{
+    var intbuffer=[];
+    var dataview=new DataView(arraybuffer);
+    for (var offset=0; offset + 3 < arraybuffer.byteLength; offset+=4 )
+    {
+	var b0 = dataview.getUint8(offset);
+	var b1 = dataview.getUint8(1+offset);
+	var b2 = dataview.getUint8(2+offset);
+	var b3 = dataview.getUint8(3+offset);
+	intbuffer.push((b0 << 24) | (b1 << 16) | (b2 << 8) | b3 );
+    }
+    return intbuffer;
+}
+
+function drawrequest(xmlhttprequest) {
+    var thisline=[];
+    var b_context = canvas2.getContext("2d");
+
+    // asked for 'arraybuffer' ( not "blob" )
+    var arraybuffer=xmlhttprequest.response;
+
+    var intbuffer=convertArrayBufferToInt32BE(arraybuffer);
+
+    var lines = intbuffer.shift();
+    // FIXME should read one line after the other within loop.
+    var fieldreader=frombytestream(intbuffer);
+    
+    for (l=0; l<lines;l++)
+    {
+	thisline=do_expand(fieldreader);
+	if (thisline.length > 0)
+	{
+	    var o=thisline[0];
+	    b_context.beginPath();
+	    b_context.moveTo(o.x, o.y);
+	    for (var i=1; i<thisline.length; i++)
+	    {
+		var o=thisline[i];
+		b_context.lineTo(o.x, o.y);
+	    }
+	    b_context.stroke();
+	}
+    }
+}
+
 function draw_b(event) {
     var x = event.pageX - canvas.offsetLeft;
     var y = event.pageY - canvas.offsetTop;
