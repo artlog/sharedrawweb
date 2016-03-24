@@ -1,5 +1,48 @@
+TODO :
+
+infinite canvas, infinite zoom.
+
+- every image ( which is a set of lines ) belong to one depth, ie images are within a plan.
+
+- playing with zoom :
+  - current display start at a given depth, let's call it MinDepth and flow to infinite.
+  - Zoom Cone : factor of reduction of image size at each relative depth is a function, depending on that function you can have photographic effects, ZoneShape(relative_depth)=factor.
+  - there is a MaxDepth at which every image is reduced to a pixel, this depends on ZoneShape function.
+
+=> this imply that when depth grow lines reduce in size but visible part of image grows. 
+
+It is up to client application to know what to ask for.
+client application start always to load from MinDepth then increase up to maxdepth.
+
+Each image is named and its name is unique.
+
+There is an initial image named defaultimg, this image is unique absolute reference.
+Any other image is relative.
+IE any other image has :
+ - relative Depth : relative Depth with previous image.
+ - next/previous ImageInPlan : next image in this plan ( same depth ).
+ - next/previous ImageInDepth : next image in next depth.
+ 
+
+
+
+Scene :
+Plan -> Image
+relPos, Image
+relPos, Image
+relPos, Image
+
+relPos, nextScene.
+
+relDepth, deeperScene 
+
+( relDepth, closerScene ).
+
+
+
+
 =================================================================
-THIS TODO is quite USELESS as it contains two years old thoughs...
+Initial TODO of 2000... ( and i don't understand it ).
 =================================================================
 - Make Server a Servlet.
 - Add A Graphical interface to give a name to file saved / load

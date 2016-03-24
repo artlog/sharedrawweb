@@ -1,8 +1,6 @@
 WHAT THIS PROJECT INTENDED TO DO:
 --------------------------------
 
-THIS README is obsolete, should be reviewed since forked from savannaa to github ( both projects are mine anyway ).
-
 ShareDrawWeb is released under the GPL license terms.
 
 It provide a server for many client to share a same basic black and white vector based drawing.
@@ -13,23 +11,41 @@ It can be use to quickly share drawing or to have a minimal graphical irc...
 -------------------------------------------------------------------------------------------------------------
 
 ENVIRONMENT:
-initialy this project was tested under GNU/Linux Debian 2.2.
-with latest CVS of kaffe machine installed in default directory /usr/local/kaffe.
-and with gcj (apt-get install gcj )
 
-Update : openjdk 6 
+openjdk 6 
 
 TO BUILT IT:
 ------------
 
 PREREQUISITE
-# Not true anymore gcj ( part of gcc 3 ) for compiling
+need a jdk to compile
 
 INSTALL
 ./init.sh
 ./doit.sh
 
-( there is currently not install you have to run it from this directory or copy ShareDraw.jar ... )
+in this order :
+Clean
+Ant
+Run
+
+Will start server on a port given on console
+
+Then
+[Load]
+[Add]
+[Add]
+
+then what is drawn in on one windows is displayed / synced on the other and conversely.
+
+For javascript version you need ... an apache ?
+
+_________________________________________________________________________________________________________________
+
+FROM HERE THIS README is obsolete, should be reviewed since forked from savannaa to github ( both projects are mine anyway ).
+initialy this project was tested under GNU/Linux Debian 2.2.
+with latest CVS of kaffe machine installed in default directory /usr/local/kaffe.
+and with gcj (apt-get install gcj )
 
 TO RUN IT :
 -----------
