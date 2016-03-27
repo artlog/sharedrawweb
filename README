@@ -38,7 +38,16 @@ Then
 
 then what is drawn in on one windows is displayed / synced on the other and conversely.
 
-For javascript version you need ... an apache ?
+For javascript version you need ... an apache
+
+assuming apache document root is /var/www/html/
+and <user> cloned sharedrawweb within a parent directory artisanlogiciel
+=>
+
+/var/www/html/tests/
+ images -> /home/<user>/artisanlogiciel/sharedrawweb/images
+ javascript -> /home/<user>/artisanlogiciel/sharedrawweb/javascript
+ test.html -> /home/<user>/artisanlogiciel/code/java/sharedrawweb/test.html
 
 _________________________________________________________________________________________________________________
 

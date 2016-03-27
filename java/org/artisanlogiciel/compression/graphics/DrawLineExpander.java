@@ -23,7 +23,7 @@
 
  main algorithm is to code only delta displacement in littlest possible size.
 */
-package lasnier.sharedraw;
+package org.artisanlogiciel.compression.graphics;
 
 import java.awt.*;
 import java.util.Vector;

@@ -23,22 +23,21 @@
 
  main algorithm is to code only delta displacement in littlest possible size.
 */
-package lasnier.sharedraw;
+package org.artisanlogiciel.compression.graphics;
 
-import java.awt.*;
+import java.awt.Point;
+import java.io.OutputStream;
 import java.util.Vector;
-import java.io.*;
-import java.io.Serializable;
 
 public class DrawLineKompressor {
 
-  Vector fromLines;
+  Vector<Point> fromLines;
   int previousSize;
   int scode[] = {3,6,14,30,64};
   final static int SCODE_MAX = 4;
   private BitFieldWriter fieldWriter = null;
 
-  public DrawLineKompressor( Vector lines) {
+  public DrawLineKompressor( Vector<Point> lines) {
     fromLines = lines;
     fieldWriter = new BitFieldWriter();
   }

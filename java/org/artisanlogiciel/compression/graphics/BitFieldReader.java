@@ -17,7 +17,7 @@
 
  */
 
-package lasnier.sharedraw;
+package org.artisanlogiciel.compression.graphics;
 
 /*
  simple class to read bitfields

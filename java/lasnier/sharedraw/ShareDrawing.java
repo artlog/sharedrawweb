@@ -25,13 +25,18 @@
 */
 package lasnier.sharedraw;
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
+import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import org.artisanlogiciel.compression.graphics.DrawLineExpander;
 
 public class ShareDrawing {
 
-  Vector lines;
+  Vector<ShareDrawingLine> lines;
 
   public ShareDrawing() {
     reset();
@@ -42,7 +47,7 @@ public class ShareDrawing {
   }
 
   public void reset() {
-    lines = new Vector();
+    lines = new Vector<>();
   }
 
   public void paint( Graphics g) {
@@ -60,9 +65,8 @@ public class ShareDrawing {
   public void saveLines( DataOutputStream destination) throws
     java.io.IOException {
     destination.writeInt( lines.size());
-    ShareDrawingLine line;
-    for ( Enumeration e = lines.elements(); e.hasMoreElements(); ) {
-      line = (ShareDrawingLine) e.nextElement();
+    for ( ShareDrawingLine line : lines )
+    {
       line.save( destination);
     }
   }
@@ -80,10 +84,9 @@ public class ShareDrawing {
 
   public void saveLinesKompressed( DataOutputStream destination) throws
     java.io.IOException {
-    destination.writeInt( lines.size());
-    ShareDrawingLine line;
-    for ( Enumeration e = lines.elements(); e.hasMoreElements(); ) {
-      line = (ShareDrawingLine) e.nextElement();
+    destination.writeInt( lines.size());    
+    for ( ShareDrawingLine line : lines )
+    {
       line.saveKompressed( destination);
     }
   }
@@ -112,5 +115,9 @@ public class ShareDrawing {
       throw new ResetException();
     }
     return (ShareDrawingLine) lines.elementAt( line);
+  }
+
+  public ArrayList<ShareDrawingLine> getLines() { 
+	return new ArrayList<ShareDrawingLine>(lines);
   }
 }

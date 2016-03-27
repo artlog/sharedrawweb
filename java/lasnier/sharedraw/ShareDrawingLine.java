@@ -22,24 +22,40 @@
 */
 package lasnier.sharedraw;
 
-import java.awt.*;
-import java.util.Vector;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.List;
+import java.awt.Point;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Vector;
 
-public class ShareDrawingLine implements Cloneable, Serializable{
+import org.artisanlogiciel.compression.graphics.DrawLineExpander;
+import org.artisanlogiciel.compression.graphics.DrawLineKompressor;
 
-  Vector lines;
+public class ShareDrawingLine implements Cloneable, Serializable
+{
+
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1334999216030995504L;
+	
+	Vector<Point> lines;
 
   public ShareDrawingLine() {
-    lines = new Vector();
+    lines = new Vector<>();
   }
 
   public void addPoint( Point point) {
     lines.addElement( point);
   }
 
-  public void setPoints( Vector points) {
+  public void setPoints( Vector<Point> points) {
     lines = points;
   }
 
@@ -108,6 +124,11 @@ public class ShareDrawingLine implements Cloneable, Serializable{
       previous = current;
     }
   }
+
+	public ArrayList<Point> getPoints() {
+	
+		return new ArrayList<Point>(lines); 
+	}
 
 }
 
