@@ -51,6 +51,15 @@ and <user> cloned sharedrawweb within a parent directory artisanlogiciel
  javascript -> /home/<user>/artisanlogiciel/sharedrawweb/javascript
  test.html -> /home/<user>/artisanlogiciel/code/java/sharedrawweb/test.html
 
+Export to svg
+
+code to export imc to svg is under eclipse
+./eclipse_env.sh setup_dev_env
+./eclipse_env.sh
+
+java class is org.artisanlogiciel.compression.Main and require two arguments <imc file source> <svg file destination>
+
+
 _________________________________________________________________________________________________________________
 
 FROM HERE THIS README is obsolete, should be reviewed since forked from savannaa to github ( both projects are mine anyway ).
