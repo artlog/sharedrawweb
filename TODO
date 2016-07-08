@@ -1,5 +1,17 @@
 TODO :
 
+Phase 0 :
+
+Need POST from javascript to submit an image to server.
+
+Then need a server recording feature.
+
+- deploy server on prototype.artisanlogiciel.net
+=> need server to interroperate with javascript.
+
+Document this basic deployment.
+
+
 infinite canvas, infinite zoom.
 
 - every image ( which is a set of lines ) belong to one depth, ie images are within a plan.

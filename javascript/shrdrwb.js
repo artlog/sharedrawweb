@@ -8,6 +8,9 @@ function record(thisline) {
 	var compressed=do_compress(thisline);
 	if ( debugcontent) { alert(output_chunk(compressed)); };
 	var intbuffer=tobytestream(compressed);
+	var arraybufferline=convertInt32ToArrayBufferBE(int32buffer);
+	// TO CONTINUE...
+	window.imcimage.clines.add(arraybufferline);
 	if ( debugcontent) {alert(output_int(intbuffer));};
 	var fieldreader=null;
 	if ( debugcontent)
@@ -49,6 +52,21 @@ function convertArrayBufferToInt32BE(arraybuffer)
 	intbuffer.push((b0 << 24) | (b1 << 16) | (b2 << 8) | b3 );
     }
     return intbuffer;
+}
+
+function convertInt32ToArrayBufferBE(int32buffer)
+{
+    arraybuffer = new ArrayBuffer(4*int32buffer.length);
+    bytebuffer = new Uint8Array(arraybuffer);
+    for (var index=0; index < int32buffer.length; index+=1 )
+    {
+	offset = 4*index;
+	bytebuffer[offset]=(0xFF000000 & int32buffer[index])>>24;
+	bytebuffer[offset+1]=(0xFF0000 & int32buffer[index]) >>16;
+	bytebuffer[offset+2]=(0xFF00 & int32buffer[index]) >>8;
+	bytebuffer[offset+3]=(0xFF & int32buffer[index]);
+    }
+    return arraybuffer;
 }
 
 function drawrequest(xmlhttprequest) {
