@@ -12,7 +12,7 @@ It can be use to quickly share drawing or to have a minimal graphical irc...
 
 ENVIRONMENT:
 
-openjdk 6 
+openjdk 7
 
 TO BUILT IT:
 ------------
@@ -30,6 +30,8 @@ Ant
 Run
 
 Will start server on a port given on console
+
+[ if 'Run it' does not work, launch ./server 127.0.0.1 ]
 
 Then
 [Load]
