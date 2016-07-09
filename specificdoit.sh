@@ -10,6 +10,19 @@ function run_javadoc()
     fi
 }
 
+function launch_webapp()
+{
+    if [[ ! -d webapp ]]
+    then
+	echo "[ERROR] webapp direcotry missing !!!" >&2
+    else
+	pushd webapp
+	[[ -x ./gluhack.sh ]] && ./gluhack.sh
+	[[ -x ./launch.sh ]] && ./launch.sh
+	popd
+    fi    
+}
+
 function specific_run()
 {
     local action=$1
@@ -17,7 +30,10 @@ function specific_run()
     if [[ "$action" == "javadoc" ]]
     then
 	run_javadoc
+    elif [[ "$action" == "webapp" ]]
+    then
+	launch_webapp
     fi
 }
 
-specific_menus=(javadoc "Generate_Java_Documentation")
+specific_menus=(javadoc "Generate_Java_Documentation" webapp "WebApp_Build_And_Run")

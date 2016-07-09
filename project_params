@@ -3,6 +3,6 @@ project_default=dist
 project_basedir=$(pwd)
 project_mainpackage=lasnier.sharedraw
 project_mainclass=$project_mainpackage.ShareDrawServer
-project_version=0.0.1
+project_version=0.1.0
 java_target=7
 default_args="localhost"
