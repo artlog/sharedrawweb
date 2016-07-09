@@ -16,6 +16,27 @@ import javax.servlet.http.HttpServletResponse;
     )
 public class ShareDrawServlet extends HttpServlet {
 
+    private lasnier.sharedraw.ShareDrawServerControl mControl = null;
+
+
+    public ShareDrawServlet()
+    {
+	super();
+
+	final lasnier.sharedraw.ShareDrawServerControl control = lasnier.sharedraw.ShareDrawServer.launch();
+	mControl = control;
+
+	Thread other = new Thread() {
+		public void run()
+		{
+		    control.show();
+		    System.out.print( "server control started");
+		}
+	    };
+
+	other.start();
+
+    }
     /*
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -30,15 +51,21 @@ public class ShareDrawServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-	byte buffer[] = new byte[4096];
 	int readen = 0;
 	ServletInputStream in = req.getInputStream();
-	while ( ( readen = in.read(buffer,0,4096) ) != -1 )
+	ServletOutputStream out = resp.getOutputStream();
+	lasnier.sharedraw.ShareDrawingLine line = new lasnier.sharedraw.ShareDrawingLine();
+	line.loadExpanded(in);
+	System.out.println("\n *** test " + mControl);
+	if ( mControl != null )
 	    {
-		System.out.println("received " + readen);
-	    };	
-        ServletOutputStream out = resp.getOutputStream();
-        out.write("NOT YET IMPLEMENTED".getBytes());
+		mControl.getServer().addLine(line);
+		out.write("line".getBytes());
+	    }
+	else
+	    {
+		out.write("ShareDrawingControler not set".getBytes());
+	    }
         out.flush();
         out.close();
     }

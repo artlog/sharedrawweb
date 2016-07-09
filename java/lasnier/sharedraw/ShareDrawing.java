@@ -37,18 +37,21 @@ import java.util.Enumeration;
 import org.artisanlogiciel.compression.graphics.DrawLineExpander;
 import java.util.Collections;
 
-public class ShareDrawing {
+public class ShareDrawing
+{
 
   private ArrayList<ShareDrawingLine> lines;
 
-  public ShareDrawing() {
+  public ShareDrawing()
+  {
     reset();
   }
 
     /*
       @Deprecated Should get lines as ArrayList<ShareDrawingLine>
     */
-  public Enumeration elements() {
+  public Enumeration elements()
+  {
       return Collections.enumeration(lines);
   }
 

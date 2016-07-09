@@ -100,7 +100,7 @@ ShareDrawServerMethods, Runnable {
 
     public void run() {
 	try
-	    {
+	{
 	ServerSocket serversocket = new ServerSocket(0);
 	System.out.println( "listen on " + serversocket.getLocalPort());
 	while ( true ) {

@@ -16,7 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  */
-/*
+/**
  ShareDrawingLine
  keep track of list of Points constituting a line
 */
@@ -41,11 +41,11 @@ public class ShareDrawingLine implements Cloneable, Serializable
 {
 
   /**
-	 * 
-	 */
-	private static final long serialVersionUID = -1334999216030995504L;
+   * 
+   */
+    private static final long serialVersionUID = -1334999216030995504L;
 	
-	Vector<Point> lines;
+    Vector<Point> lines;
 
   public ShareDrawingLine() {
     lines = new Vector<>();

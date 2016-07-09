@@ -10,6 +10,8 @@ import org.apache.catalina.webresources.StandardRoot;
 
 public class Main {
 
+
+    
     public static void main(String[] args) throws Exception {
 
         String webappDirLocation = "src/main/webapp/";
@@ -46,18 +48,8 @@ public class Main {
 
         ctx.setResources(resources);
 
-	final lasnier.sharedraw.ShareDrawServerControl control = lasnier.sharedraw.ShareDrawServer.launch();
-
-	Thread other = new Thread() {
-		public void run()
-		{
-		    control.show();
-		    System.out.print( "server control started");
-		}
-	    };
         tomcat.start();
-	other.start();
         tomcat.getServer().await();
-	other.join();
+
     }
 }
