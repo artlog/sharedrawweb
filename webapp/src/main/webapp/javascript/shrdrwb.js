@@ -8,9 +8,11 @@ function record(thisline) {
 	var compressed=do_compress(thisline);
 	if ( debugcontent) { alert(output_chunk(compressed)); };
 	var intbuffer=tobytestream(compressed);
-	var arraybufferline=convertInt32ToArrayBufferBE(int32buffer);
+	var arraybufferline=convertInt32ToArrayBufferBE(intbuffer);
 	// TO CONTINUE...
-	window.imcimage.clines.add(arraybufferline);
+	var clines = [];
+	clines[0]=arraybufferline;
+	window.clines = clines;
 	if ( debugcontent) {alert(output_int(intbuffer));};
 	var fieldreader=null;
 	if ( debugcontent)

@@ -52,5 +52,5 @@ function XMLHttpRequestPostCompressedImage(image)
   var client = getXMLHttpRequestObject();
   client.open("POST", "/tests/images/newimage.imc");
   client.setRequestHeader("Content-Type", "application/octet-stream");
-  client.send(image);
+  client.send(image.clines[0]);
 }
