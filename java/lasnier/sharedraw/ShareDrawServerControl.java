@@ -27,7 +27,7 @@ import java.awt.*;
 import java.util.Vector;
 // import javax.swing.*;
 
-class ShareDrawServerControl extends Frame implements ItemListener {
+public class ShareDrawServerControl extends Frame implements ItemListener {
 
   ShareDrawServer thisServer = null;
 

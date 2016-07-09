@@ -30,12 +30,34 @@ public class Main {
         // Declare an alternative location for your "WEB-INF/classes" dir
         // Servlet 3.0 annotation will work
         File additionWebInfClasses = new File("target/classes");
+	
+	// horrible but quickest path before reworking multiple project with maven
+	// File extProjectJar = new File("../dist/lib/sharedrawweb-0.0.1.jar");
+	File extProjectJar = new File("../dist/lib");
         WebResourceRoot resources = new StandardRoot(ctx);
-        resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes",
-                additionWebInfClasses.getAbsolutePath(), "/"));
+        resources.addPreResources(new DirResourceSet(resources,
+		"/WEB-INF/classes",
+                additionWebInfClasses.getAbsolutePath(),
+		"/"));
+	resources.addPreResources(new DirResourceSet(resources,
+		"/WEB-INF/lib",
+                extProjectJar.getAbsolutePath(),
+		"/"));
+
         ctx.setResources(resources);
 
+	final lasnier.sharedraw.ShareDrawServerControl control = lasnier.sharedraw.ShareDrawServer.launch();
+
+	Thread other = new Thread() {
+		public void run()
+		{
+		    control.show();
+		    System.out.print( "server control started");
+		}
+	    };
         tomcat.start();
+	other.start();
         tomcat.getServer().await();
+	other.join();
     }
 }

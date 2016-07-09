@@ -40,8 +40,6 @@ ShareDrawServerMethods, Runnable {
 
   public static void main( String args[]) {
 
-    ShareDrawServerMethods server = null;
-
     System.out.println( getLicensingString());
 
     /* don't make a rmi server anymore 
@@ -50,24 +48,32 @@ ShareDrawServerMethods, Runnable {
     }
     */
     String name =  args[0];
-    
-    try {
-      server = new ShareDrawServer();
-    } catch (Exception e) {
-      System.err.println("ComputeEngine exception: " +
-      e.getMessage());
-      e.printStackTrace();
-    }
 
-    /*
-    ShareDrawClient client1;
-    */
-    ShareDrawServerControl control = new ShareDrawServerControl();
-    control.setServer( (ShareDrawServer) server);
+    ShareDrawServerControl control = launch();
     control.show();
     System.out.print( "server control started");
   }
 
+    public static ShareDrawServerControl launch()
+    {
+	    ShareDrawServerMethods server = null;
+	    try {
+		server = new ShareDrawServer();
+	    } catch (Exception e) {
+		System.err.println("ComputeEngine exception: " +
+				   e.getMessage());
+		e.printStackTrace();
+	    }
+
+	    /*
+	      ShareDrawClient client1;
+	    */
+	    ShareDrawServerControl control = new ShareDrawServerControl();
+	    control.setServer( (ShareDrawServer) server);
+
+	    return control;
+    }
+    
     /**
      * WARNING UNDER GPL LICENSE TERMS
      * THIS MESSAGE SHOULD APPEARS AND NOT BE MODIFIED UNDER ANY OTHER LICENSE
