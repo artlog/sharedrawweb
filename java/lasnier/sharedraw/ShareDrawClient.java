@@ -17,15 +17,16 @@
 
  */
 
-/*
+/**
  ShareDrawClient.java
- from Leila Semlali && Philippe Lhardy
 
  - receive images from ShareDrawServer
  - create new Line by user requirement
  - send update to server
 
-*/
+@author Leila Semlali
+@author Philippe Lhardy
+**/
 package lasnier.sharedraw;
 
 import java.util.*;
@@ -59,8 +60,8 @@ public class ShareDrawClient implements
     }
   }
 
-  public void addLine( ShareDrawingLine line) {
-    System.out.println( "add line received " + line);
+  public void addLine( ShareDrawingLine line)
+  {
     ShareDrawingLine copy = null;
     if (localImage == null) {
       localImage = new ShareDrawing();
@@ -87,7 +88,8 @@ public class ShareDrawClient implements
   public void reset() {
     /* previous image is garbaged */
     localImage = new ShareDrawing();
-    if ( lineEditor != null) {
+    if ( lineEditor != null)
+    {
       lineEditor.setDrawing( localImage);
     }
   }

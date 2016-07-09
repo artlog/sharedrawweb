@@ -3,8 +3,7 @@
 drawserver=$1
 if test -z $drawserver
 then
-    echo "usage $0 <serveripname> [jvmtype:(kaffe11,jdk)]"
-    exit 1
+    drawserver=127.0.0.1
 fi
 
 JARPROG=dist/lib/sharedrawweb-0.0.1.jar

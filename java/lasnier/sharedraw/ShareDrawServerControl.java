@@ -16,7 +16,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  */
-/*
+
+/**
+ Controls buttons 'Save' 'Quit' 'Load' 'Add'
+and compressed file name
+-awt only-
+
+Delegates to ShareDrawServer
  */
 
 package lasnier.sharedraw;
@@ -24,14 +30,19 @@ package lasnier.sharedraw;
 import java.awt.event.*;
 import java.awt.*;
 
-import java.util.Vector;
-// import javax.swing.*;
+public class ShareDrawServerControl
+    extends Frame
+    implements ItemListener
+{
 
-public class ShareDrawServerControl extends Frame implements ItemListener {
+    final static String DEFAULT_FILE="test.img";
+    final static String DEFAULT_COMPRESSED_FILE="compress.imc";
+    
+    ShareDrawServer thisServer = null;
+    TextField mImageNameTF = null;
 
-  ShareDrawServer thisServer = null;
-
-  public ShareDrawServerControl() {
+  public ShareDrawServerControl()
+  {
     super();
     create();
   }
@@ -42,16 +53,17 @@ public class ShareDrawServerControl extends Frame implements ItemListener {
   void create() {
     setLayout( new FlowLayout());
     setSize( 300, 300);
-    Button buttonSave = new Button( "save");
+    mImageNameTF = new TextField(DEFAULT_COMPRESSED_FILE, 30);
+    Button buttonSave = new Button( "Save");
     buttonSave.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          thisServer.save("test.img");
-          thisServer.saveKompressed("compress.imc");
+          thisServer.save(DEFAULT_FILE);
+          thisServer.saveKompressed(mImageNameTF.getText());
         }
       }
     );
-    Button buttonQuit = new Button( "quit");
+    Button buttonQuit = new Button( "Quit");
     buttonQuit.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -59,16 +71,16 @@ public class ShareDrawServerControl extends Frame implements ItemListener {
         }
       }
     );
-    Button buttonLoad = new Button( "load");
+    Button buttonLoad = new Button( "Load");
     buttonLoad.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          // thisServer.load("test.img");
-          thisServer.loadExpanded("compress.imc");
+          // thisServer.load(DEFAULT_FILE);
+	    thisServer.loadExpanded(mImageNameTF.getText());
         }
       }
     );
-    Button buttonAdd = new Button( "add");
+    Button buttonAdd = new Button( "Add");
     buttonAdd.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -76,15 +88,32 @@ public class ShareDrawServerControl extends Frame implements ItemListener {
         }
       }
     );
+    Button buttonClear = new Button( "Clear");
+    buttonClear.addActionListener(
+      new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          thisServer.clear();
+        }
+      }
+    );
+
+    add( mImageNameTF);
     add( buttonSave);
     add( buttonQuit);
     add( buttonLoad);
     add( buttonAdd);
+    add( buttonClear);
   }
 
-  public void setServer( ShareDrawServer server) {
+  public void setServer( ShareDrawServer server)
+  {
     thisServer = server;
   }
+   
+    public ShareDrawServer getServer()
+    {
+	return thisServer;
+    }
 }
 
 

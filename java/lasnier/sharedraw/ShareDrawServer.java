@@ -16,14 +16,15 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  */
-/*
- ShareDrawServer.java
- from Leila Semlali && Philippe Lhardy
+/**
+ShareDrawServer.java
 
  - Handle multiple ShareDrawClient that display drawing on client side
  - Load and Save Drawings to local file
 
-*/
+@author Leila Semlali
+@author Philippe Lhardy
+**/
 package lasnier.sharedraw;
 
 import java.util.*;
@@ -36,7 +37,7 @@ public class ShareDrawServer implements
 ShareDrawServerMethods, Runnable {
 
   transient private ShareDrawing localImage;
-  transient private Vector localUsers;
+  transient private ArrayList<ShareDrawClientMethods> localUsers;
 
   public static void main( String args[]) {
 
@@ -119,10 +120,19 @@ ShareDrawServerMethods, Runnable {
 
   public ShareDrawServer() throws lasnier.sharedraw.RemoteException {
     super();
-    localUsers = new Vector();
+    localUsers = new ArrayList<ShareDrawClientMethods>(2);
     localImage = new ShareDrawing();
     Thread server_thread = new Thread(this);
     server_thread.start();
+  }
+
+    /**
+       restart with an empty image
+    */
+  public void clear()
+  {
+      localImage = new ShareDrawing();
+      reset();
   }
 
   public void addLine( ShareDrawingLine line) {
@@ -198,36 +208,48 @@ ShareDrawServerMethods, Runnable {
     localImage.loadLines(source);
   }
 
-  public void reset() {
-    ShareDrawClientMethods user;
-    for ( Enumeration e1=localUsers.elements(); e1.hasMoreElements();) {
-      user = (ShareDrawClientMethods) e1.nextElement();
-      try {
+  /**
+    reset every client
+  */
+  public void reset()
+  {
+    for (ShareDrawClientMethods user: localUsers)
+    {
+      try
+      {
         user.reset();
       }
-      catch( lasnier.sharedraw.RemoteException r) {
-        System.err.println( "problem with user on client side" +
-           r.toString());
+      catch( lasnier.sharedraw.RemoteException r)
+      {
+        System.err.println( "problem with user on client side" + r.toString());
       }
       resetClient( user);
     }
   }
 
-  public void resetClient( ShareDrawClientMethods user) {
+  /**
+    reset a client
+  */
+  public void resetClient( ShareDrawClientMethods user)
+  {
     ShareDrawingLine line = null;
-    for ( Enumeration e2=localImage.elements();e2.hasMoreElements();) {
-      line = (ShareDrawingLine) e2.nextElement();
-      try {
-        user.addLine( line);
-      }
-      catch( lasnier.sharedraw.RemoteException r) {
-        System.err.println( "problem with user on client side" +
-           r.toString());
-      }
+    for ( Enumeration e2=localImage.elements();e2.hasMoreElements();)
+    {
+	line = (ShareDrawingLine) e2.nextElement();
+	try
+	{
+	    user.addLine( line);
+	}
+	catch( lasnier.sharedraw.RemoteException r)
+	{
+	    System.err.println( "problem with user on client side" +
+				r.toString());
+	}
     }
   }
 
-  private ShareDrawClient createClient() {
+  private ShareDrawClient createClient()
+  {
     ShareDrawClient client = null;
     try {
       client = new ShareDrawClient();
@@ -238,17 +260,19 @@ ShareDrawServerMethods, Runnable {
     }
     client.setServer( this);
     client.reset();
-    localUsers.addElement( client);
+    localUsers.add( client);
     return client;
   }
 
   public void addRemoteClient( ShareDrawClientMethods remote) throws
-    lasnier.sharedraw.RemoteException {
+    lasnier.sharedraw.RemoteException
+  {
     System.out.println( "client : " + remote);
-    localUsers.addElement( remote);
+    localUsers.add( remote);
   }
 
-  public ShareDrawClient addClient() {
+  public ShareDrawClient addClient()
+  {
     ShareDrawClient client = createClient();
     client.run();
     resetClient( client);
@@ -257,13 +281,11 @@ ShareDrawServerMethods, Runnable {
 
   private void deleteClient( ShareDrawClient client) {
     client.finish();
-    localUsers.removeElement( client);
+    localUsers.remove( client);
   }
 
   private void updateClients( ShareDrawingLine line) {
-    ShareDrawClientMethods user;
-    for ( Enumeration e=localUsers.elements(); e.hasMoreElements();) {
-      user = (ShareDrawClientMethods) e.nextElement();
+    for (ShareDrawClientMethods user : localUsers) {
       try {
         user.addLine( line);
       }
