@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+source ./project_params
 
 drawserver=$1
 if test -z $drawserver
@@ -6,9 +8,8 @@ then
     drawserver=127.0.0.1
 fi
 
-JARPROG=dist/lib/sharedrawweb-0.0.1.jar
-MAINCLASS=lasnier.sharedraw.ShareDrawServer
+JARPROG=dist/lib/sharedrawweb-${project_version}.jar
 
 #LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/progs/javalib/
-java -jar $JARPROG -Djava.security.policy=java.policy $MAINCLASS $drawserver
+java -jar $JARPROG -Djava.security.policy=java.policy $project_mainclass $drawserver
 
