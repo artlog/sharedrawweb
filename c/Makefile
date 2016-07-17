@@ -3,7 +3,7 @@ expander: pointlist.c sdpoint.c main.c fieldreader.c drawlineexpander.c
 
 
 test: expander
-	./expander ../philippe.imc philippe >generated/philippe.h
-	gcc generated/philippe.h
+	./expander ../philippe.imc philippe >generated/philippe_data.h
+	gcc generated/philippe_data.h
 
 .PHONY: test

@@ -8,6 +8,13 @@
 
 #include "drawlineexpander.h"
 
+
+/**
+ read a .imc and convert it into c data to be include in by example opengl
+
+ params : <filename of imc extension included> <name of c data structure generated>
+**/
+
 struct vectlist {
   struct vectlist * next;
   int index;
@@ -118,7 +125,7 @@ void adapt_point(struct pointlist * this, struct sdpoint * point, struct sdadapt
   struct vectlist *vect = lines->last;
   set_vector( &vect->vector[vect->index][0], point, adapter);
   vect->index++;
-}
+} 
 
 int main(int argc, char ** argv)
 { 
@@ -133,10 +140,10 @@ int main(int argc, char ** argv)
 	.last=NULL
       };
       struct sdadapter adapter={
-	.cx=0,
-	.cy=0,
-	.width=600,
-	.height=600,
+	.cx=-100,
+	.cy=-100,
+	.width=200, 
+	.height=-200,// negative to match standard y axis
 	.f_before=setup_adapter,
 	.f_for_each=adapt_point,
 	.f_after=close_adapter,
@@ -156,6 +163,7 @@ int main(int argc, char ** argv)
       if ( fd != - 1 )
 	{
 	  inputstream_init(&input, fd);
+	  input.debug=1;
 	  int lines = inputstream_readuint32(&input);
 	  if (lines < 10000)
 	    {
@@ -163,7 +171,7 @@ int main(int argc, char ** argv)
 		{
 		  // fprintf(stderr, "Line %u/%u\n", (i+1),lines);
 		  drawlineexpander_init(&expander);
-		  // expander.debug=1;
+		  expander.debug=1;
 		  drawlineexpander_expand(&expander, &input);
 		  // pointlist_dump(expander.expandedLines);
 		  pointlist_update_min_max(expander.expandedLines,&min,&max);

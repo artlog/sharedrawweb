@@ -31,7 +31,8 @@ struct sdpoint * drawlineexpander_readRel(struct drawlineexpander *this);
 struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struct inputstream * input )
 {
   struct pointlist * expandedLines = this->expandedLines;
-
+  struct sdpoint * point;
+  
   if (expandedLines == NULL)
     {
       if (this->debug)
@@ -63,11 +64,15 @@ struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struc
       return NULL;
     }
   // first point of line, absolute
-  pointlist_add( expandedLines, drawlineexpander_readAbs( this,  64));
-
+  point=drawlineexpander_readAbs( this,  64);
+  pointlist_add( expandedLines,  point);
+  if (this->debug)
+    {
+      fprintf(stderr,"add initial absolute point size %u x:%i y:%i \n",this->currentSize, point->x, point->y);
+    }
   for ( int i = 1; i < point_count; i ++ )
     {
-    struct sdpoint * point = drawlineexpander_readRel( this);
+    point = drawlineexpander_readRel( this);
     if (input->eof)
       {
 	if (this->debug)
@@ -158,10 +163,11 @@ struct sdpoint * drawlineexpander_readAbs(struct drawlineexpander *this, int siz
   this->currentSize = size;
   
   struct sdpoint * point = new_sdpoint();
+  sdpoint_set(point,0,0);
   if ( size > 32 ) {
-    sdpoint_set( point,
-		 fieldreader_read( this->fieldreader, 32),
-		 fieldreader_read( this->fieldreader, 32));
+    int x = fieldreader_read( this->fieldreader, 32);
+    int y = fieldreader_read( this->fieldreader, 32);
+    sdpoint_set( point,x,y);
   }
   else {
     int nocenter=FALSE;

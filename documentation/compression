@@ -1,5 +1,11 @@
+
+compressing lines of points (x,y) with signed integer values
+
+
 Compression algorithm was designed with purpose of being very short for many points.
 This is not designed based on a heavy mathematical ground but on some quick pragmatic approach.
+
+idea is to to capture change (dx,dy) between two points because changes in consecutive points belonging to a line are always small.
 
 bitsize of encoding  3 6 14 30 64
 
