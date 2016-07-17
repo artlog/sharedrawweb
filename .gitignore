@@ -6,8 +6,6 @@ debianize.sh
 doit.sh
 eclipse_env.sh
 json.sh
-json.sh~
-Makefile
 pythonize.sh
 scrumify.sh
 test.json

@@ -65,19 +65,19 @@ void close_adapter(struct pointlist * this, struct sdadapter * adapter)
 {
 }
 
-void dump_sdlines(struct sdlines * lines)
+void dump_sdlines(struct sdlines * lines, char * varname)
 {
   struct vectlist * vect = lines->first;
   for (int i=0; (i < lines->lines) && (vect != NULL); i++)
     {
       float* v;  
-      printf("float vect%i[%i][3]={",i,vect->index);
+      printf("float %s_l%i[%i][2]={",varname,i,vect->index);
       v=&vect->vector[0][0];
-      printf("{%f,%f,%f}",v[0],v[1],v[2]);
+      printf("{%f,%f}",v[0],v[1]);
       for ( int j=1; j<vect->index;j++)
 	{
 	  v=&vect->vector[j][0];
-	  printf(",\n{%f,%f,%f}",v[0],v[1],v[2]);
+	  printf(",\n{%f,%f}",v[0],v[1]);
 	}
       printf("};\n");
       vect=vect->next;
@@ -87,10 +87,11 @@ void dump_sdlines(struct sdlines * lines)
 	}
     } 
   vect=lines->first;
-  printf("struct sdlines[%i]={\n", lines->lines);
+  printf("struct sdlines { int points; float (*vector)[2];};\n");
+  printf("struct sdlines %s[%i]={\n",varname, lines->lines);
   for (int i=0; (i < lines->lines) && (vect != NULL); i++)
     {      
-      printf("{.points=%i,.vector=vect%i}",vect->index,i);
+      printf("{.points=%i,.vector=%s_l%i}",vect->index,varname,i);
       vect=vect->next;
       if ( vect != NULL)
 	{
@@ -141,7 +142,16 @@ int main(int argc, char ** argv)
 	.f_after=close_adapter,
 	.data=&sdlines
       };
-	
+      char* varname;
+
+      if ( argc > 2 )
+	{
+	  varname=argv[2];
+	}
+      else
+	{
+	  varname="default";
+	}
       int fd = open( argv[1], 0);
       if ( fd != - 1 )
 	{
@@ -160,7 +170,7 @@ int main(int argc, char ** argv)
 		  pointlist_foreach(expander.expandedLines, &adapter);
 		}
 	      {
-		dump_sdlines(&sdlines);
+		dump_sdlines(&sdlines,varname);
 	      }
 	      sdpoint_dump(&max,"// max");
 	      sdpoint_dump(&min,"// min");
