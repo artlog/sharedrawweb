@@ -25,10 +25,6 @@
 */
 package lasnier.sharedraw;
 
-import java.util.*;
-import java.awt.*;
-import java.io.Serializable;
-
 public class ShareDrawPoll extends Thread {
 
   transient private ShareDrawServerMethods drawServer;

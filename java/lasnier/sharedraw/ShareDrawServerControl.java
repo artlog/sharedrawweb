@@ -35,7 +35,12 @@ public class ShareDrawServerControl
     implements ItemListener
 {
 
-    final static String DEFAULT_FILE="test.img";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8611062519987592917L;
+	
+	final static String DEFAULT_FILE="test.img";
     final static String DEFAULT_COMPRESSED_FILE="compress.imc";
     
     ShareDrawServer thisServer = null;
@@ -80,6 +85,14 @@ public class ShareDrawServerControl
         }
       }
     );
+    Button buttonImport = new Button( "Import");
+    buttonImport.addActionListener(
+      new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+	    thisServer.importImage("IMG",mImageNameTF.getText());
+        }
+      }
+    );
     Button buttonAdd = new Button( "Add");
     buttonAdd.addActionListener(
       new ActionListener() {
@@ -101,6 +114,7 @@ public class ShareDrawServerControl
     add( buttonSave);
     add( buttonQuit);
     add( buttonLoad);
+    add( buttonImport);
     add( buttonAdd);
     add( buttonClear);
   }

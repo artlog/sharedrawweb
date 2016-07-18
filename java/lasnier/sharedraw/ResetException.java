@@ -19,8 +19,6 @@
 
 package lasnier.sharedraw;
 
-import java.io.Serializable;
-
 class ResetException extends DrawException {
   public ResetException() {
     super();

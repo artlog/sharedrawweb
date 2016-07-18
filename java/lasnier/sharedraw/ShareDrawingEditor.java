@@ -20,11 +20,9 @@
  */
 package lasnier.sharedraw;
 
-import java.awt.event.*;
-import java.awt.*;
-import java.applet.*;
-
-import java.util.Vector;
+import java.applet.Applet;
+import java.awt.BorderLayout;
+import java.awt.Frame;
 
 public class ShareDrawingEditor extends Applet {
 
@@ -92,7 +90,7 @@ public class ShareDrawingEditor extends Applet {
       drawTest.start();
       f.add("Center", drawTest);
       f.setSize(300, 300);
-      f.show();
+      f.setVisible(true);
     }
 
     public String getAppletInfo() {

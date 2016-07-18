@@ -28,12 +28,8 @@
 */
 package lasnier.sharedraw;
 
-import java.net.Socket;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 
 public class ShareDrawServerKompressedAccess
 extends ShareDrawServerAccess {

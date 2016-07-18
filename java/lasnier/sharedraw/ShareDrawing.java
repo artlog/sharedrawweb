@@ -32,10 +32,8 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 
-import org.artisanlogiciel.compression.graphics.DrawLineExpander;
-import java.util.Collections;
+import org.artisanlogiciel.graphics.Importer;
 
 public class ShareDrawing
 {
@@ -45,14 +43,6 @@ public class ShareDrawing
   public ShareDrawing()
   {
     reset();
-  }
-
-    /*
-      @Deprecated Should get lines as ArrayList<ShareDrawingLine>
-    */
-  public Enumeration elements()
-  {
-      return Collections.enumeration(lines);
   }
 
   public void reset() {
@@ -89,6 +79,12 @@ public class ShareDrawing
       lines.add( line);
     }
   }
+  
+  public void importImage( Importer importer) throws
+	    java.io.IOException 
+  {
+	  importer.importInto(this);
+  }
 
   public void saveLinesKompressed( DataOutputStream destination) throws
     java.io.IOException {
@@ -101,7 +97,7 @@ public class ShareDrawing
 
   public void loadLinesExpanded( DataInputStream source) throws
     java.io.IOException {
-    DrawLineExpander expander = new DrawLineExpander();
+    // DrawLineExpander expander = new DrawLineExpander();
     int nb_lines = source.readInt();
     ShareDrawingLine line;
     for ( int i = 0; i < nb_lines; i++ ) {
@@ -128,4 +124,10 @@ public class ShareDrawing
   public ArrayList<ShareDrawingLine> getLines() { 
 	return new ArrayList<ShareDrawingLine>(lines);
   }
+  
+  /** Not a copy, use with care */
+  public ArrayList<ShareDrawingLine> getInternLines() { 
+	return lines;
+  }
+
 }

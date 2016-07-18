@@ -25,42 +25,41 @@
 */
 package org.artisanlogiciel.compression.graphics;
 
-import java.awt.*;
-import java.util.Vector;
-import java.io.*;
-import java.io.Serializable;
+import java.awt.Point;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class DrawLineExpander {
 
-  Vector expandedLines;
+  ArrayList<Point> expandedLines;
   int currentSize;
   int scode[] = {3,6,14,30,64};
   final static int SCODE_MAX = 4;
   private BitFieldReader fieldReader = null;
 
   public DrawLineExpander() {
-    expandedLines = new Vector();
+    expandedLines = new ArrayList<>();
     fieldReader = new BitFieldReader();
   }
 
-  /* create a Vector of points */
-  public Vector expand( InputStream input ) throws java.io.IOException {
+  /* create a List of points */
+  public ArrayList<Point> expand( InputStream input ) throws java.io.IOException {
     fieldReader.setInputStream( input);
     int point_count = fieldReader.read( 32);
     // System.out.println( point_count);
-    expandedLines.addElement( readAbs( 64));
+    expandedLines.add( readAbs( 64));
     for ( int i = 1; i < point_count; i ++ ) {
       Point point = readRel();
       if ( currentSize == 64 ) {
         // absolute
-        expandedLines.addElement( point);
+        expandedLines.add( point);
       }
       else {
         // relative
-        Point previous = (Point) expandedLines.lastElement();
+        Point previous = (Point) expandedLines.get(expandedLines.size()-1);
         point.x = point.x + previous.x;
         point.y = point.y + previous.y;
-        expandedLines.addElement( point);
+        expandedLines.add( point);
       }
     }
     return expandedLines;

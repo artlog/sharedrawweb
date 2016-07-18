@@ -24,7 +24,6 @@ package lasnier.sharedraw;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.List;
 import java.awt.Point;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -32,7 +31,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import org.artisanlogiciel.compression.graphics.DrawLineExpander;
 import org.artisanlogiciel.compression.graphics.DrawLineKompressor;
@@ -45,17 +43,17 @@ public class ShareDrawingLine implements Cloneable, Serializable
    */
     private static final long serialVersionUID = -1334999216030995504L;
 	
-    Vector<Point> lines;
+    ArrayList<Point> lines;
 
   public ShareDrawingLine() {
-    lines = new Vector<>();
+    lines = new ArrayList<>();
   }
 
   public void addPoint( Point point) {
-    lines.addElement( point);
+    lines.add( point);
   }
 
-  public void setPoints( Vector<Point> points) {
+  public void setPoints( ArrayList<Point> points) {
     lines = points;
   }
 
@@ -71,14 +69,14 @@ public class ShareDrawingLine implements Cloneable, Serializable
 
   private void readPoint( DataInputStream source) throws java.io.IOException {
     Point point = new Point( source.readInt(), source.readInt());
-    lines.addElement( point);
+    lines.add( point);
   }
 
   public void save( DataOutputStream destination) throws
     java.io.IOException {
     destination.writeInt( lines.size());
     for (int i=0; i < lines.size(); i++) {
-      writePoint( (Point) lines.elementAt(i), destination);
+      writePoint( (Point) lines.get(i), destination);
     }
   }
 
@@ -116,7 +114,7 @@ public class ShareDrawingLine implements Cloneable, Serializable
     g.setPaintMode();
     Point previous = null;
     for (int i=0; i < np; i++) {
-      Point current = (Point) lines.elementAt(i);
+      Point current = (Point) lines.get(i);
       if ( i == 0 ) {
         previous = current;
       }

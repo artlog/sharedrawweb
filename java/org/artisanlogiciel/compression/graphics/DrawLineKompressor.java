@@ -27,17 +27,17 @@ package org.artisanlogiciel.compression.graphics;
 
 import java.awt.Point;
 import java.io.OutputStream;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class DrawLineKompressor {
 
-  Vector<Point> fromLines;
+  ArrayList<Point> fromLines;
   int previousSize;
   int scode[] = {3,6,14,30,64};
   final static int SCODE_MAX = 4;
   private BitFieldWriter fieldWriter = null;
 
-  public DrawLineKompressor( Vector<Point> lines) {
+  public DrawLineKompressor( ArrayList<Point> lines) {
     fromLines = lines;
     fieldWriter = new BitFieldWriter();
   }
@@ -49,7 +49,7 @@ public class DrawLineKompressor {
     if ( ( fromLines != null) && ( fromLines.size() > 0)) {
 	Point topoint = null;
 	for ( int i = 1; i < fromLines.size(); i++) {
-	    Point frompoint = (Point) fromLines.elementAt( i);
+	    Point frompoint = (Point) fromLines.get( i);
 	    if ( ( topoint != null )  && ( topoint.x == frompoint.x ) && ( topoint.y == frompoint.y ) )
 		{
 		    skipsame ++;
@@ -63,14 +63,14 @@ public class DrawLineKompressor {
     }
 
     if ( ( fromLines != null) && ( fromLines.size() > 0)) {
-      Point frompoint = (Point) fromLines.elementAt(0);
+      Point frompoint = (Point) fromLines.get(0);
       Point point, topoint;
       topoint = new Point();
-      int x, y, center, size;
+      int center, size;
       fieldWriter.write( fromLines.size() - skipsame, 32);
       writeAbs( frompoint, 64);
       for ( int i = 1; i < fromLines.size(); i++) {
-        point = (Point) fromLines.elementAt( i);
+        point = (Point) fromLines.get( i);
         topoint.x = point.x - frompoint.x;
         topoint.y = point.y - frompoint.y;
         // find wich size to use...

@@ -16,6 +16,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  */
+
 /**
 ShareDrawServer.java
 
@@ -27,11 +28,15 @@ ShareDrawServer.java
 **/
 package lasnier.sharedraw;
 
-import java.util.*;
-import java.io.*;
-import lasnier.sharedraw.*;
-import java.net.Socket;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.ServerSocket;
+import java.util.ArrayList;
+
+import org.artisanlogiciel.graphics.IMAImporter;
+import org.artisanlogiciel.graphics.Importer;
 
 public class ShareDrawServer implements
 ShareDrawServerMethods, Runnable {
@@ -41,17 +46,10 @@ ShareDrawServerMethods, Runnable {
 
   public static void main( String args[]) {
 
-    System.out.println( getLicensingString());
-
-    /* don't make a rmi server anymore 
-    if (System.getSecurityManager() == null) {
-      System.setSecurityManager(new RMISecurityManager());
-    }
-    */
-    String name =  args[0];
+    System.out.println( getLicensingString());    
 
     ShareDrawServerControl control = launch();
-    control.show();
+    control.setVisible(true);
     System.out.print( "server control started");
   }
 
@@ -99,23 +97,37 @@ ShareDrawServerMethods, Runnable {
     }
 
     public void run() {
-	try
-	{
-	ServerSocket serversocket = new ServerSocket(0);
-	System.out.println( "listen on " + serversocket.getLocalPort());
-	while ( true ) {
-	    new ShareDrawServerKompressedAccess( this, serversocket.accept());
-	}
+		ServerSocket serversocket = null;  	
+		try 
+		{
+			serversocket = new ServerSocket(0);
+			System.out.println( "listen on " + serversocket.getLocalPort());
+			while ( true ) {
+			    new ShareDrawServerKompressedAccess( this, serversocket.accept());
+			}
 	    }
-	catch ( java.io.IOException io)
+		catch ( java.io.IOException io)
+		{
+			System.err.println( " error on server listenning ");
+			io.printStackTrace();
+		}		
+		catch ( RemoteException re)
 	    {
-		System.err.println( " error on server listenning ");
-		io.printStackTrace();
+			re.printStackTrace();
 	    }
-	catch ( RemoteException re)
-	    {
-		re.printStackTrace();
-	    }
+		finally
+		{
+			if ( serversocket != null)
+			{
+				try {
+					serversocket.close();
+				}
+				catch ( Exception any)
+				{					
+				}
+			}
+
+		}
     }
 
   public ShareDrawServer() throws lasnier.sharedraw.RemoteException {
@@ -194,6 +206,21 @@ ShareDrawServerMethods, Runnable {
     }
     reset();
   }
+  
+  public void importImage( String pImportType, String ref)
+  {
+    try {
+        FileInputStream fi = new FileInputStream( ref);
+        localImage = new ShareDrawing();
+        Importer importer = new IMAImporter(new DataInputStream( fi)); 
+        localImage.importImage( importer);
+      }
+      catch( java.io.FileNotFoundException fnfe) {
+      }
+      catch ( java.io.IOException ioe) {
+      }
+      reset();	  
+  }
 
   /* save Image to destination */
   public void saveLines( DataOutputStream destination ) throws
@@ -232,19 +259,17 @@ ShareDrawServerMethods, Runnable {
   */
   public void resetClient( ShareDrawClientMethods user)
   {
-    ShareDrawingLine line = null;
-    for ( Enumeration e2=localImage.elements();e2.hasMoreElements();)
+    for ( ShareDrawingLine line : localImage.getInternLines())
     {
-	line = (ShareDrawingLine) e2.nextElement();
-	try
-	{
-	    user.addLine( line);
-	}
-	catch( lasnier.sharedraw.RemoteException r)
-	{
-	    System.err.println( "problem with user on client side" +
-				r.toString());
-	}
+		try
+		{
+		    user.addLine( line);
+		}
+		catch( lasnier.sharedraw.RemoteException r)
+		{
+		    System.err.println( "problem with user on client side" +
+					r.toString());
+		}
     }
   }
 

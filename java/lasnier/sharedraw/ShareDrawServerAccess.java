@@ -120,7 +120,6 @@ implements ShareDrawServerMethods, Runnable {
      */
     public void run()
     {
-	int method;
 	try {
 	    while ( ! server_receive( objectinputstream.readInt()));
 	}

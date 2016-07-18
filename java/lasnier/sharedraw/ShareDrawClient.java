@@ -29,8 +29,7 @@
 **/
 package lasnier.sharedraw;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Frame;
 import java.io.Serializable;
 
 public class ShareDrawClient implements
@@ -141,7 +140,7 @@ public class ShareDrawClient implements
     drawTest.start();
     f.add("Center", drawTest);
     f.setSize(300, 300);
-    f.show();
+    f.setVisible(true);
   }
 
   public void stop() {
