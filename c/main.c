@@ -8,12 +8,13 @@
 
 #include "drawlineexpander.h"
 
+void usage()
+{
+  printf("read a .imc and convert it into c data to include in by example opengl\n");
+  printf("params : <filename of imc extension included> <optional name of c data structure generated, default to 'default'.>\n");
+}
 
-/**
- read a .imc and convert it into c data to be include in by example opengl
-
- params : <filename of imc extension included> <name of c data structure generated>
-**/
+int debug_expander=0;
 
 struct vectlist {
   struct vectlist * next;
@@ -169,11 +170,11 @@ int main(int argc, char ** argv)
 	    {
 	      for (int i=0; i< lines; i++)
 		{
-		  // fprintf(stderr, "Line %u/%u\n", (i+1),lines);
+		  if ( debug_expander > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),lines); }
 		  drawlineexpander_init(&expander);
 		  expander.debug=1;
 		  drawlineexpander_expand(&expander, &input);
-		  // pointlist_dump(expander.expandedLines);
+		  if (debug_expander > 0 ) { pointlist_dump(expander.expandedLines); }
 		  pointlist_update_min_max(expander.expandedLines,&min,&max);
 		  pointlist_foreach(expander.expandedLines, &adapter);
 		}
@@ -189,5 +190,13 @@ int main(int argc, char ** argv)
 	    }
 	  close(fd);
 	}
+      else
+	{
+	  fprintf(stderr,"[ERROR] can't open %s file", argv[1]);
+	}
+    }
+  else
+    {
+      usage();
     }
 }

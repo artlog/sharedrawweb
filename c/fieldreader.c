@@ -39,7 +39,7 @@ unsigned int inputstream_readuint32(struct inputstream * stream)
   result[3]=v[0];
   if ( stream->debug )
     {
-      fprintf(stderr,"%u %x %x %x %x\n",total, v[0], v[1], v[2], v[3]);
+      fprintf(stderr,"%lu %x %x %x %x\n",total, v[0], v[1], v[2], v[3]);
     }  
   return (*(unsigned int*) result);
 }
