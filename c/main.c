@@ -37,6 +37,7 @@ struct vectlist* vectlist_new(int count)
       vect->index=0;
       vect->next=NULL;
     }
+  return vect;
 }
   
 void setup_adapter(struct pointlist * this, struct sdadapter * adapter, int count)
