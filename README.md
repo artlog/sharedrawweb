@@ -41,7 +41,8 @@ in this order :
 Clean
 Ant
 
-Then either 'Run' that is standalone GUI server or 'WebApp_Build_And_Run' that is both tomcat & GUI 
+Then either 'Run' that is standalone GUI server or 'WebApp_Build_And_Run' that is both tomcat & GUI
+WebApp_Build_And_Run will gather maven dependencies over web, this can be slow.
 
 Will start server on a port given on console
 
@@ -77,4 +78,8 @@ Launch GUI server : ./server
 
 Launch webapp & http server : cd webapp; ./launch.sh
 
+Create OpenGL or Xlib structures
 
+make
+build/expander <source.imc> <nameofdest>
+nameofdest file will contain c struct definition to include.
