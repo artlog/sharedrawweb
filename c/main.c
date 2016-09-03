@@ -12,6 +12,9 @@ void usage()
 {
   printf("read a .imc and convert it into c data to include in by example opengl\n");
   printf("params : <filename of imc extension included> <optional name of c data structure generated, default to 'default'.>\n");
+  printf("ex:\n");
+  printf("expander ../flat3.imc flat\n");
+  printf("will create a c file named flat containing struct xline flat content\n wihtin current directory");
 }
 
 int debug_expander=0;
@@ -173,12 +176,6 @@ void adapt_point(struct pointlist * this, struct sdpoint * point, struct sdadapt
   vect->index++;
 } 
 
-void usage()
-{
-  printf("usage:\n");
-  printf("expander <file imc source> <name of generated struct sdlines> >mytest.c\n");
-  
-}
 int main(int argc, char ** argv)
 {
   int gensdlines=0;
@@ -271,8 +268,5 @@ int main(int argc, char ** argv)
     {
       usage();
     }
-  else
-    {
-      usage();
-    }
+
 }
