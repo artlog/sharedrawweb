@@ -127,6 +127,12 @@ void adapt_point(struct pointlist * this, struct sdpoint * point, struct sdadapt
   vect->index++;
 } 
 
+void usage()
+{
+  printf("usage:\n");
+  printf("expander <file imc source> <name of generated struct sdlines> >mytest.c\n");
+  
+}
 int main(int argc, char ** argv)
 { 
   if ( argc > 1)
@@ -189,5 +195,9 @@ int main(int argc, char ** argv)
 	    }
 	  close(fd);
 	}
+    }
+  else
+    {
+      usage();
     }
 }
