@@ -129,3 +129,40 @@ void dump_xlines(FILE * f, struct sdlines * lines, char * varname)
     }
   fprintf(f,"};\n");
 }
+
+
+struct xlines * build_xlines(struct sdlines * lines, int start, int count)
+{
+  struct xlines * xlines = NULL;  
+  struct vectlist * vect = lines->first;
+
+  if ((start >= 0) && ( count > 0 ))
+    {    
+      xlines=calloc(count,sizeof(struct xlines));
+      if (xlines != NULL )
+	{
+	  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
+	    {
+	      if (( i >= start ) && ( i < start + count))
+		{
+		  float* v;
+		  XPoint * points= calloc(vect->index, sizeof(XPoint));
+		  if ( points != NULL )
+		    {
+		      for ( int j=0; j<vect->index;j++)
+			{
+			  v=&vect->vector[j][0];
+			  points[j].x=(int)v[0];
+			  points[j].y=(int)v[1];
+			}
+		      xlines[i-start].points=vect->index;
+		      xlines[i-start].vector=points;
+		      vect=vect->next;
+		    }
+		}
+	    }      
+	}
+ 
+    }
+  return xlines; 
+}

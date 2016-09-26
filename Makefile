@@ -17,6 +17,10 @@ libs: $(patsubst %,$(BUILD)/lib/lib%.a,$(libraries))
 $(BUILD)/lib/libalexpander.a: $(libobjects)
 	ar rccs $@ $^
 
+libinclude:
+	mkdir -p $(BUILD)/include
+	cp c/*.h $(BUILD)/include/
+
 $(objects): | $(BUILD)/obj
 
 $(libobjects): | $(BUILD)/lib
@@ -49,7 +53,7 @@ $(BUILD)/obj/%.o: c/%.c $(BUILD)/obj
 clean:
 	rm -rf $(BUILD)
 
-.PHONY:clean test libs
+.PHONY:clean test libs libinclude
 
 # needed to keep those files within include after make ( remove unused )
 .PRECIOUS: $(BUILD)/include/%.h
