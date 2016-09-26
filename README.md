@@ -66,7 +66,9 @@ and <user> cloned sharedrawweb within a parent directory artisanlogiciel
  javascript -> /home/<user>/artisanlogiciel/sharedrawweb/javascript
  test.html -> /home/<user>/artisanlogiciel/code/java/sharedrawweb/test.html
 
-Export to svg
+IMPORT EXPORT
+
+1) Export to svg
 
 code to export imc to svg is under eclipse
 ./eclipse_env.sh setup_dev_env
@@ -78,8 +80,24 @@ Launch GUI server : ./server
 
 Launch webapp & http server : cd webapp; ./launch.sh
 
-Create OpenGL or Xlib structures
+2) Create OpenGL or Xlib structures
+
+this is C code 'expander' binary
 
 make
 build/expander <source.imc> <nameofdest>
 nameofdest file will contain c struct definition to include.
+
+3) Import .IMA files Export to .imc
+
+IMA files are proprietary files for a very old laser show program.
+to import , build and run java project ./doit.sh
+Clean
+Ant
+Run
+
+then in java GUI , enter full path of ima file then :
+Add { first time only, to have an ouput window }
+Import
+
+then it is possible to enter another name with .imc and export it.

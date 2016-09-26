@@ -1,3 +1,5 @@
+#ifndef __POINTLIST_HEADER__
+#define __POINTLIST_HEADER__
 
 #define POINTSBYRECORD 65535
 
@@ -38,3 +40,5 @@ void pointlist_dump(struct pointlist * this);
 void pointlist_update_min_max(struct pointlist * this, struct sdpoint * min, struct sdpoint * max);
 
 void pointlist_foreach(struct pointlist * this,struct sdadapter * adapter);
+
+#endif

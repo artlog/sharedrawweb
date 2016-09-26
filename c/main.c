@@ -7,11 +7,14 @@
 #include <stddef.h>
 
 #include "drawlineexpander.h"
+#include "sdlines.h"
+#include "imareader.h"
 
 void usage()
 {
-  printf("read a .imc and convert it into c data to include in by example opengl\n");
-  printf("params : <filename of imc extension included> <optional name of c data structure generated, default to 'default'.>\n");
+  printf("read a .imc or .ima and convert it into c data to include in by example opengl\n");
+  printf("params : <input filename> <optional name of c data structure generated, default to 'default'.>\n");
+  printf(" in input filename .imc .ima  extension should be included, it is used for type detection\n");
   printf("ex:\n");
   printf("expander ../flat3.imc flat\n");
   printf("will create a c file named flat containing struct xline flat content\n wihtin current directory");
@@ -19,30 +22,6 @@ void usage()
 
 int debug_expander=0;
 
-struct vectlist {
-  struct vectlist * next;
-  int index;
-  float vector[1][3];
-};
-
-struct sdlines {
-  int lines;  
-  struct vectlist * first;
-  struct vectlist * last;
-};
-
-struct vectlist* vectlist_new(int count)
-{
-  struct vectlist *vect;
-  vect=malloc(sizeof(struct vectlist) + (count-1) * sizeof(vect->vector));
-  if ( vect != NULL)
-    {
-      vect->index=0;
-      vect->next=NULL;
-    }
-  return vect;
-}
-  
 void setup_adapter(struct pointlist * this, struct sdadapter * adapter, int count)
 {
   if (adapter == NULL)
@@ -58,114 +37,12 @@ void setup_adapter(struct pointlist * this, struct sdadapter * adapter, int coun
     }
     {
       struct vectlist * vect = vectlist_new(count);
-      if ( lines->last == NULL )
-	{
-	  lines->first = vect;
-	  lines->last = vect;
-	  lines->lines=1;
-	}
-      else
-	{
-	  lines->last->next = vect;
-	  lines->last=vect;
-	  lines->lines++;
-	}
+      sdlines_add_vectlist(lines,vect);
     }
 }
 
 void close_adapter(struct pointlist * this, struct sdadapter * adapter)
 {
-}
-
-void dump_sdlines(struct sdlines * lines, char * varname)
-{
-  struct vectlist * vect = lines->first;
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
-    {
-      float* v;  
-      printf("float %s_l%i[%i][2]={",varname,i,vect->index);
-      v=&vect->vector[0][0];
-      printf("{%f,%f}",v[0],v[1]);
-      for ( int j=1; j<vect->index;j++)
-	{
-	  v=&vect->vector[j][0];
-	  printf(",\n{%f,%f}",v[0],v[1]);
-	}
-      printf("};\n");
-      vect=vect->next;
-      if ( vect !=NULL)
-	{
-	  printf("\n");
-	}
-    } 
-  vect=lines->first;
-  printf("struct sdlines { int points; float (*vector)[2];};\n");
-  printf("struct sdlines %s[%i]={\n",varname, lines->lines);
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
-    {      
-      printf("{.points=%i,.vector=%s_l%i}",vect->index,varname,i);
-      vect=vect->next;
-      if ( vect != NULL)
-	{
-	  printf(",\n");
-	}
-    }
-  if ( vect != NULL )
-    {
-      printf("??? points=%i ????",vect->index);
-    }
-  printf("};\n");
-}
-
-void dump_xlines(FILE * f, struct sdlines * lines, char * varname)
-{
-  struct vectlist * vect = lines->first;
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
-    {
-      float* v;  
-      fprintf(f,"XPoint %s_l%i[%i]={\n",varname,i,vect->index);
-      v=&vect->vector[0][0];
-      fprintf(f,"{%i,%i}",(int) v[0],(int) v[1]);
-      for ( int j=1; j<vect->index;j++)
-	{
-	  if ( j % 5 == 0 )
-	    {
-	      fprintf(f,"\n");
-	    }
-	  v=&vect->vector[j][0];
-	  fprintf(f,",{%i,%i}",(int) v[0],(int) v[1]);
-	}
-      fprintf(f,"\n};\n");
-      vect=vect->next;
-      if ( vect !=NULL)
-	{
-	  fprintf(f,"\n");
-	}
-    } 
-  vect=lines->first;
-  fprintf(f,"\nstruct xlines { int points; XPoint *vector;};\n");
-  fprintf(f,"\nstruct xlines %s[%i]={\n",varname, lines->lines);
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
-    {      
-      fprintf(f,"{.points=%i,.vector=%s_l%i}",vect->index,varname,i);
-      vect=vect->next;
-      if ( vect != NULL)
-	{
-	  fprintf(f,",\n");
-	}
-    }
-  if ( vect != NULL )
-    {
-      printf("??? points=%i ????",vect->index);
-    }
-  fprintf(f,"};\n");
-}
-
-void set_vector( float v[3], struct sdpoint * point, struct sdadapter * adapter)
-{    
-  v[0] = (float) (point[0].x - adapter->cx) / adapter->width;
-  v[1] = (float) (point[0].y - adapter->cy) / adapter->height;
-  v[2]=.0;
 }
 
 void adapt_point(struct pointlist * this, struct sdpoint * point, struct sdadapter * adapter)
@@ -201,6 +78,7 @@ int main(int argc, char ** argv)
 	.data=&sdlines
       };
       char* varname;
+      char* inputfilename;
 
       if ( genxlines == 1 )
 	{
@@ -215,47 +93,64 @@ int main(int argc, char ** argv)
 	{
 	  varname="default";
 	}
+      inputfilename=argv[1];
+
       FILE * genfile = fopen( varname, "w");
       if ( genfile == NULL )
 	{
 	  fprintf(stderr,"[ERROR] can't create %s\n", varname);
 	  exit(1);
 	}
-      int fd = open( argv[1], 0);
+
+      int fd = open( inputfilename, 0);
       if ( fd != - 1 )
 	{
+	  int readok = 0;
+	  
 	  inputstream_init(&input, fd);
 	  input.debug=1;
-	  int lines = inputstream_readuint32(&input);
-	  if (lines < 10000)
+
+	  if ( filename_is_ima(inputfilename) )
 	    {
-	      for (int i=0; i< lines; i++)
-		{
-		  if ( debug_expander > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),lines); }
-		  drawlineexpander_init(&expander);
-		  expander.debug=1;
-		  drawlineexpander_expand(&expander, &input);
-		  if (debug_expander > 0 ) { pointlist_dump(expander.expandedLines); }
-		  pointlist_update_min_max(expander.expandedLines,&min,&max);
-		  pointlist_foreach(expander.expandedLines, &adapter);
-		}
-	      {
-		if ( gensdlines )
-		  {
-		    dump_sdlines(&sdlines,varname);
-		  }
-		if ( genxlines )
-		  {
-		    dump_xlines(genfile,&sdlines,varname);
-		  }
-	      }
-	      sdpoint_dump(&max,"// max");
-	      sdpoint_dump(&min,"// min");
+	      printf("Ima file detected '%s'\n", inputfilename);
+	      read_ima( &input, &sdlines);
+	      readok = 1;
 	    }
 	  else
 	    {
-	      fprintf(stderr, "Too many lines %xh", lines);
+	      int lines = inputstream_readuint32(&input);
+	      if (lines < 10000)
+		{
+		  for (int i=0; i< lines; i++)
+		    {
+		      if ( debug_expander > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),lines); }
+		      drawlineexpander_init(&expander);
+		      expander.debug=1;
+		      drawlineexpander_expand(&expander, &input);
+		      if (debug_expander > 0 ) { pointlist_dump(expander.expandedLines); }
+		      pointlist_update_min_max(expander.expandedLines,&min,&max);
+		      pointlist_foreach(expander.expandedLines, &adapter);
+		    }
+		  sdpoint_dump(&max,"// max");
+		  sdpoint_dump(&min,"// min");
+		  readok = 1;
+		}
+	      else
+		{
+		  fprintf(stderr, "Too many lines %xh", lines);
+		}
 	    }
+	  if (readok)
+	  {
+	    if ( gensdlines )
+	      {
+		dump_sdlines(&sdlines,varname);
+	      }
+	    if ( genxlines )
+	      {
+		dump_xlines(genfile,&sdlines,varname);
+	      }
+	  }
 	  close(fd);
 	  fclose(genfile);
 	}

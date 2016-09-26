@@ -4,7 +4,7 @@ CPPFLAGS=-g
 
 BUILD=build
 
-libsrc=c/drawlineexpander.c c/fieldreader.c c/pointlist.c c/sdpoint.c
+libsrc=c/drawlineexpander.c c/fieldreader.c c/pointlist.c c/sdpoint.c c/inputstream.c c/imareader.c c/sdlines.c
 src=c/main.c
 libraries=alexpander
 
