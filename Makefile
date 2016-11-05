@@ -38,6 +38,9 @@ $(BUILD)/expander: $(BUILD)/lib/libalexpander.a $(objects)
 	@echo link expander objects $(objects) and libalexpander
 	$(LD) -o $@ $(LDFLAGS) $(objects) -L$(BUILD)/lib -Wl,-Bstatic -lalexpander -Wl,-Bdynamic
 
+$(BUILD)/svgparser: c/svgparser.c
+	gcc `xml2-config --cflags` `xml2-config --libs` $^ -o $@
+
 $(BUILD)/obj:
 	mkdir -p $@
 

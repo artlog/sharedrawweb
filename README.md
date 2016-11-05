@@ -101,3 +101,5 @@ Add { first time only, to have an ouput window }
 Import
 
 then it is possible to enter another name with .imc and export it.
+
+4) export svg parts ( svgpath bezier ) into .ima

@@ -1,5 +1,13 @@
 TODO :
 
+NEW TODO FOR cube_opengl use svg parsing to ima
+
+
+ * support for svgpath bezier done
+ * now need to support <rect> for parsing.
+ * need to directly parse xml svg content within tool ( and not rely on external xslt transform )
+
+
 Phase 0 :
 
 Need POST from javascript to submit an image to server.

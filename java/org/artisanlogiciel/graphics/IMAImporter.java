@@ -6,6 +6,11 @@ import java.io.DataInputStream;
 import lasnier.sharedraw.ShareDrawing;
 import lasnier.sharedraw.ShareDrawingLine;
 
+/**
+.IMA format is an old proprietary format for laser show program
+it contain a list of point the laser beam should goe through,
+x=255 has a special meaning to hide (255,254) ( send beam into the box) or show it (255,255): let is flow outside.
+*/
 public class IMAImporter implements Importer 
 {
 	
