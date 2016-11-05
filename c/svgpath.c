@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define MAXPATH 65536
-int debug_svgpath=1;
+int debug_svgpath=0;
 
 void dump_progress(struct pathparser * pathparser)
 {
@@ -12,6 +12,11 @@ void dump_progress(struct pathparser * pathparser)
 	 pathparser->index,pathparser->bezier,
 	 pathparser->lastpoint.x,pathparser->lastpoint.y	 
 	 );
+}
+
+int is_bezier(struct svgpath_element * svgpath_element)
+{
+  return (svgpath_element->mode == 'c') || (svgpath_element->mode == 'C');
 }
 
 /**
@@ -66,7 +71,7 @@ int pathparser_init(struct pathparser * pathparser, char * path, int length, str
 {
   pathparser->start=path;
   pathparser->index=0;
-  pathparser->bezier=0;
+  pathparser->bezier=0;  
   pathparser->absolute=1;
   if ( start == NULL )
     {
@@ -78,6 +83,7 @@ int pathparser_init(struct pathparser * pathparser, char * path, int length, str
       pathparser->lastpoint.x=start->x;
       pathparser->lastpoint.y=start->y;
     }
+  pathparser->line.points=0;
   return 0;
 }
 
@@ -130,17 +136,33 @@ int pathparser_parsepoint(struct pathparser * pathparser, struct svgpoint * svgp
 }
 
 /**
-allocate a new bezier and add it in list.
+ allocate a new bezier and add it in list as a bezier
 */
 int svgpath_addbezier(struct svgpath * svgpath, struct bezier_cubic * bezier)
 {
-  struct allistof * bezier_list = allistcontext_get_membership(svgpath->svgpathcontext,0);
-  struct bezier_cubic * new_bezier = malloc(sizeof(struct bezier_cubic));
-  memcpy(new_bezier,bezier,sizeof(*new_bezier));
-  struct allistelement * element = allistcontext_new_allistelement(svgpath->svgpathcontext, new_bezier);
-  struct allistelement * elementadded = allistelement_add_in(element, bezier_list);
-  if ( debug_svgpath==1) { printf("element added %p\n", elementadded);};
-  return -2;
+  struct allistof * element_list = allistcontext_get_membership(svgpath->svgpathcontext,0);
+  struct svgpath_element * new_element = malloc(sizeof(struct svgpath_element));
+  new_element->mode='c';
+  memcpy(&new_element->bezier,bezier,sizeof(*bezier));
+  struct allistelement * element = allistcontext_new_allistelement(svgpath->svgpathcontext, new_element);
+  struct allistelement * elementadded = allistelement_add_in(element, element_list);
+  if ( debug_svgpath==1) { printf("element bezier_cubic added %p\n", elementadded);};
+  return 0;
+}
+
+/**
+ allocate a new svgpath_line and add it in list as a bezier
+*/
+int svgpath_addline(struct svgpath * svgpath, struct svgpath_line * line)
+{
+  struct allistof * element_list = allistcontext_get_membership(svgpath->svgpathcontext,0);
+  struct svgpath_element * new_element = malloc(sizeof(struct svgpath_element));
+  new_element->mode='M';
+  memcpy(&new_element->line,line,sizeof(*line));
+  struct allistelement * element = allistcontext_new_allistelement(svgpath->svgpathcontext, new_element);
+  struct allistelement * elementadded = allistelement_add_in(element, element_list);
+  if ( debug_svgpath==1) { printf("element svgpath_line added %p\n", elementadded);};
+  return 0;
 }
 
 /**
@@ -160,15 +182,23 @@ int pathparser_nexttoken(struct pathparser * pathparser, struct svgpath * svgpat
       // END !
       pathparser->bezier=0;
       pathparser->absolute=1;
+      // flush remainings line
+      if ( pathparser->line.points > 0)
+	{
+	  svgpath_addline(svgpath,&pathparser->line);
+	  pathparser->line.points=0;
+	}	  
+
       // ZERO -> END
       return 0;
     }
   if (pathparser->start[index+1] == ' ')
     {
-      switch(pathparser->start[index])
+      pathparser->mode = pathparser->start[index];
+      switch(pathparser->mode)
 	{
 	case 'm':
-	  pathparser->absolute=1; // testing... 
+	  pathparser->absolute=0; 
 	  pathparser->bezier=0;
 	  pathparser->index=index+2;
 	  break;
@@ -216,6 +246,13 @@ int pathparser_nexttoken(struct pathparser * pathparser, struct svgpath * svgpat
 	}
       if ( pathparser->bezier > 0)
 	{
+	  // flush remainings line
+	  if ( pathparser->line.points > 0)
+	    {
+	      svgpath_addline(svgpath,&pathparser->line);
+	      pathparser->line.points=0;
+	    }	  
+
 	  ++pathparser->bezier;
 	  // we got a full bezier definition
 	  if (pathparser->bezier >3)
@@ -231,11 +268,19 @@ int pathparser_nexttoken(struct pathparser * pathparser, struct svgpath * svgpat
 	}
       else
 	{
-	  // bezier == 0 ?
+	  // bezier == 0 => this is a lineto
 	  pathparser->lastpoint.x=thispoint.x;
 	  pathparser->lastpoint.y=thispoint.y;
-	  pathparser->bezier=1;
-	  // lineto ??
+	  pathparser->line.point[pathparser->line.points].x=thispoint.x;
+	  pathparser->line.point[pathparser->line.points].y=thispoint.y;
+
+	  pathparser->line.points=pathparser->line.points+1;
+	  if ( pathparser->line.points >SVGPATH_LINE_POINTS)
+	    {
+	      // should add this lineto [ of pathparser->line.points ]
+	      svgpath_addline(svgpath,&pathparser->line);
+	      pathparser->line.points=0;
+	    }	  
 	}
       return 1;
     }

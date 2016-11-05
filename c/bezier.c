@@ -6,6 +6,13 @@
 
 #include "svgpath.h"
 
+void usage()
+{
+  printf("convert svgpath with bezier curves into a .ima file\n");
+  printf("usage\n");
+  printf("parameters : <number_of_points> \"<from_svgpathindex> to <to_svgpathindex>\" <ima file> <svgpath1> <svgpath2> ... \n");
+}
+
 void calc_coeff(struct bezier_cubic_param * param, int index, int points)
 {
   double t=( (double) index/points);
@@ -160,29 +167,10 @@ struct save_bezier_to_ima {
   int object;
 };
 
-/** draw only control points */
-void * walk_bezier_list_step_control(struct allistof * list, struct allistelement * element, struct allistelement * next, int count, void * param)
-{  
-  struct save_bezier_to_ima * bezier_ima = (struct save_bezier_to_ima *) param;  
-  
-  if (param != NULL)
-    {
-      FILE * saveto = bezier_ima->saveto;
-      struct bezier_cubic * bezier_cubic=(struct bezier_cubic *) element->data;
-      if ( bezier_cubic != NULL )
-	{
-	  for (int i=0;i<4;i++)
-	    {
-	      savepoint(saveto,&bezier_cubic->point[i],&bezier_ima->max,&bezier_ima->min);
-	    }
-	}
-      bezier_ima->total=bezier_ima->total +4;   
-      bezier_ima->bezier=bezier_ima->bezier + 1;
-      
-    }
-  return param;
-}
-
+/**
+  assumes all elements data are struct bezier_cubic *
+  convert bezier element to as many points as specified in struct save_bezier_to_ima * param
+**/
 void * walk_bezier_list_step_2(struct allistof * list, struct allistelement * element, struct allistelement * next, int count, void * param)
 {  
   struct save_bezier_to_ima * bezier_ima = (struct save_bezier_to_ima *) param;  
@@ -196,40 +184,59 @@ void * walk_bezier_list_step_2(struct allistof * list, struct allistelement * el
 
       FILE * saveto = bezier_ima->saveto;
       int points = bezier_ima->points;
-
-      struct bezier_cubic * bezier_cubic=(struct bezier_cubic *) element->data;
       
-      if ( bezier_cubic != NULL )
-	{
-	  for (int i=0;i<4;i++)
-	    {
-	      p[i].x= bezier_cubic->point[i].x;
-	      p[i].y= bezier_cubic->point[i].y;
-	    }
-	}
+      struct svgpath_element * svgpath_element = (struct svgpath_element *) element->data;
+      if ( is_bezier(svgpath_element) )
+      {
+	struct bezier_cubic * bezier_cubic= &svgpath_element->bezier ;
+            
+	if ( bezier_cubic != NULL )
+	  {
+	    for (int i=0;i<4;i++)
+	      {
+		p[i].x= bezier_cubic->point[i].x;
+		p[i].y= bezier_cubic->point[i].y;
+	      }
+	  }
    
-      bezier[0].x=p[0].x;
-      bezier[0].y=p[0].y;
-      savepoint(saveto,&bezier[0],&bezier_ima->max,&bezier_ima->min);
-      for (int j=1; j<points; j++)
+	bezier[0].x=p[0].x;
+	bezier[0].y=p[0].y;
+	savepoint(saveto,&bezier[0],&bezier_ima->max,&bezier_ima->min);
+	for (int j=1; j<points; j++)
+	  {
+	    calc_coeff(&coeff,j,points);
+	    calc_Point(&coeff,bezier_cubic,&bezier[j%2]);
+	    if ( ( bezier[j%2].x == bezier[(j-1)%2].x)
+		 && ( bezier[j%2].y == bezier[(j-1)%2].y) )
+	      {
+		/*
+		  Useless because very same point than previous.
+		  This is mainly due to shrink in (x,y) ([0-255],[0-255]) space
+		*/
+		++useless;
+	      }
+	    else 	  
+	      {
+		savepoint(saveto,&bezier[j%2],&bezier_ima->max,&bezier_ima->min);
+		bezier_ima->total=bezier_ima->total +1;
+	      }
+	  }
+	savepoint(saveto,&p[3],&bezier_ima->max,&bezier_ima->min);
+	fflush(stdout);
+	bezier_ima->bezier=bezier_ima->bezier + 1;
+	fprintf(stderr,"\n %i) points %i useless %i \n",bezier_ima->bezier, points, useless);
+      }
+      else
 	{
-	  calc_coeff(&coeff,j,points);
-	  calc_Point(&coeff,bezier_cubic,&bezier[j%2]);
-	  if ( ( bezier[j%2].x == bezier[(j-1)%2].x)
-	       && ( bezier[j%2].y == bezier[(j-1)%2].y) )
+	  struct svgpath_line * line= &svgpath_element->line;
+	  if ( line != NULL )
 	    {
-	      ++useless;
-	    }
-	  else 	  
-	    {
-	      savepoint(saveto,&bezier[j%2],&bezier_ima->max,&bezier_ima->min);
-	      bezier_ima->total=bezier_ima->total +1;
-	    }
+	      for (int i=0;i<line->points;i++)
+		{
+		  savepoint(saveto,&line->point[i],&bezier_ima->max,&bezier_ima->min);
+		}
+	    }	  
 	}
-      savepoint(saveto,&p[3],&bezier_ima->max,&bezier_ima->min);
-      fflush(stdout);
-      bezier_ima->bezier=bezier_ima->bezier + 1;
-      fprintf(stderr,"\n %i) points %i useless %i \n",bezier_ima->bezier, points, useless);
       
     }
   return param;
@@ -243,14 +250,30 @@ void * walk_bezier_list_step_1(struct allistof * list, struct allistelement * el
   
   if (param != NULL)
     {
-      struct bezier_cubic * bezier_cubic=(struct bezier_cubic *) element->data;
-      if ( bezier_cubic != NULL )
+      struct svgpath_element * svgpath_element = (struct svgpath_element *) element->data;
+      if ( is_bezier(svgpath_element) )
+      {
+	struct bezier_cubic * bezier_cubic= &svgpath_element->bezier;
+	if ( bezier_cubic != NULL )
+	  {
+	    for (int i=0;i<4;i++)
+	      {
+		keep_min(&bezier_cubic->point[i],&bezier_ima->min);
+		keep_max(&bezier_cubic->point[i],&bezier_ima->max);
+	      }
+	  }
+      }
+      else
 	{
-	  for (int i=0;i<4;i++)
+	  struct svgpath_line * line= &svgpath_element->line;
+	  if ( line != NULL )
 	    {
-	      keep_min(&bezier_cubic->point[i],&bezier_ima->min);
-	      keep_max(&bezier_cubic->point[i],&bezier_ima->max);
-	    }
+	      for (int i=0;i<line->points;i++)
+		{
+		  keep_min(&line->point[i],&bezier_ima->min);
+		  keep_max(&line->point[i],&bezier_ima->max);
+		}
+	    }	  
 	}
     }
   return param;
@@ -267,19 +290,25 @@ int main(int argc, char* args[])
     {
       int start=0;
       int stop=0;
-      
+
+      if ( sscanf(args[2],"%i to %i",&start,&stop) != 2 )
+	{
+	  fprintf(stderr,"[ERROR] second argument expected to be <start_index> to <end_index>\n");
+	  exit(1);
+	}
+
       saveto = fopen(args[3],"w");
       if ( saveto == NULL )
 	{
 	  fprintf(stderr,"[ERROR] Can't open %s to write", args[2]);
+	  exit(1);
 	}
       else
 	{
 	  // will be rewritten anyway, but this allows to reserve enough place.
 	  saveheader(saveto,points);
-	}
-      
-      sscanf(args[2],"%i to %i",&start,&stop);
+	}      
+	
       bezier_ima.total=0;
       bezier_ima.bezier=0;
       bezier_ima.object=0;
@@ -361,7 +390,6 @@ int main(int argc, char* args[])
 			    NULL, // start from head
 			    //			    walk_bezier_list_step_2, // function to add bezier points
 			    walk_bezier_list_step_2, // function to add bezier points
-			    //walk_bezier_list_step_control,
 			    &bezier_ima, // parameter to fill
 			    1,// walk one by one
 			    0 // start at first
