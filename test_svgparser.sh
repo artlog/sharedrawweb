@@ -9,3 +9,5 @@ build/svgparser ../cube_opengl/resources/explode1.svg >> test_rect.sh
 
 chmod u+x test_rect.sh
 ./test_rect.sh
+
+build/svgparser ../cube_opengl/resources/explode1.svg id

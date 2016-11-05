@@ -34,6 +34,7 @@ struct svg_rect {
   float y;
   float ry;
   struct svg_transform_matrix * transform;
+  char * path; // ugly but quick shortcut
 };
 
 struct sp {
@@ -54,6 +55,13 @@ struct rect_context
 
 struct rect_context r_context;
 
+
+void usage()
+{
+  printf(" dump a svg into pathes, if object is rect convert it to path\n");
+  printf("usage:\n");
+  printf("parameter <svgfile to parse> (path|id)\n");
+}
 /*
 
 https://www.w3.org/TR/SVG/coords.html#TransformMatrixDefined
@@ -265,8 +273,54 @@ processNode(xmlTextReaderPtr reader) {
 		svg_rect_dump(this_rect,stdout);
 	      }	      
 	    ++r_context.rects;
+	  }	
+      }
+      else if (strncmp(name, "path",4) == 0 )
+      {
+	int attributesc=xmlTextReaderAttributeCount(reader);
+	if ( svgparser_debug > 0 )
+	  {
+	    printf("path %d\n",r_context.rects); 
 	  }
-	
+	if ( ( attributesc > 0 ) && ( r_context.rects < MAX_RECTS ))
+	  {
+	    struct svg_rect * this_rect=&(r_context.rect[r_context.rects]);
+	    this_rect->transform=NULL;
+	    char * dummy;
+	    xmlChar * xmlChar =	xmlTextReaderGetAttribute(reader,"id");
+	    if ( xmlChar != NULL)
+	      {
+		if ( svgparser_debug > 0 )
+		  {
+		    printf(" id='%s' \n", xmlChar);
+		  }
+		char * newid=strdup(xmlChar);
+		if (newid != NULL)
+		  {
+		    this_rect->id=newid;
+		  }
+		else
+		  {
+		    fprintf(stderr,"Heap shortage while duplicating id '%s'\n", xmlChar);
+		    exit(1);
+		  }
+	      }
+	    xmlChar=xmlTextReaderGetAttribute(reader,"d");
+	    if ( xmlChar != NULL)
+	      {
+		if ( svgparser_debug > 0 )
+		  {
+		    printf(" d='%s' \n", xmlChar);
+		  }
+		char * newpath=strdup(xmlChar);
+		if (newpath != NULL)
+		  {
+		    this_rect->path=newpath;
+		  }
+
+	      }
+	    ++r_context.rects;
+	  }
       }
 }
 
@@ -304,15 +358,66 @@ void convert_to_svgpath()
   for (int i=0 ; i < r_context.rects; i++)
     {
       struct svg_rect * rect = &r_context.rect[i];
-      svg_transform_matrix_rect_to_rect4(rect->transform,rect,&rectangle[i]);
-      rect4_dump_svgpath(&rectangle[i],stdout);
+      if ( rect->path == NULL)
+	{
+	  svg_transform_matrix_rect_to_rect4(rect->transform,rect,&rectangle[i]);
+	  rect4_dump_svgpath(&rectangle[i],stdout);
+	}
+      else
+	{
+	  fprintf(stdout,"\"");
+	  fprintf(stdout,rect->path);
+	  fprintf(stdout,"\" ");
+	}
     }
 }
- 
-int main(int argc, char **argv) {
-    if (argc != 2)
-        return(1);
 
+void dump_ids()
+{
+  struct rect4 rectangle[MAX_RECTS];
+  
+  for (int i=0 ; i < r_context.rects; i++)
+    {
+      struct svg_rect * rect = &r_context.rect[i];
+      if ( rect->id != NULL)
+	{
+	  int l = strlen(rect->id);
+	  if ( l == 3 )
+	    {
+	      fprintf(stdout,"corner %s %i",rect->id, i);
+	    }
+	  else if ( l == 2)
+	    {
+	      fprintf(stdout,"edge   %s  %i",rect->id, i);
+	    }
+	  else if (l == 1)
+	    {
+	      fprintf(stdout,"center %s   %i",rect->id, i);
+	    }
+	  else
+	    {
+	      fprintf(stdout,"?????? %s %i",rect->id, i);
+	    }
+	}
+      fprintf(stdout,"\n");
+    }
+}
+
+int main(int argc, char **argv)
+{
+  char * svgfilename = NULL;
+  int dump_id=0;
+  if (argc < 2)
+    {
+      usage();      
+      return(1);
+    }
+
+  if ( argc > 2 )
+    {
+      dump_id=( strncmp(argv[2],"id",4) == 0);
+    }
+      
     /*
      * this initialize the library and check potential ABI mismatches
      * between the version it was compiled for and the actual shared
@@ -321,8 +426,9 @@ int main(int argc, char **argv) {
     LIBXML_TEST_VERSION
 
     r_context.rects= 0;
-    
-    streamFile(argv[1]);
+
+    svgfilename=argv[1];
+    streamFile(svgfilename);
 
     /*
      * Cleanup function for the XML library.
@@ -333,7 +439,14 @@ int main(int argc, char **argv) {
      */
     xmlMemoryDump();
 
-    convert_to_svgpath();
+    if ( dump_id)
+      {
+	dump_ids();
+      }
+    else
+      {
+	convert_to_svgpath();
+      }
     
     return(0);
 }
