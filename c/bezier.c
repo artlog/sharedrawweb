@@ -94,6 +94,9 @@ void keep_max(struct svgpoint *p,struct svgpoint *max)
     }
 }
 
+/**
+ save number of points of this .ima
+**/
 void saveheader(FILE* saveto, int points)
 {
   // .IMA format
@@ -234,6 +237,7 @@ void * walk_bezier_list_step_2(struct allistof * list, struct allistelement * el
 	      for (int i=0;i<line->points;i++)
 		{
 		  savepoint(saveto,&line->point[i],&bezier_ima->max,&bezier_ima->min);
+		  bezier_ima->total=bezier_ima->total +1;
 		}
 	    }	  
 	}
@@ -409,7 +413,9 @@ int main(int argc, char* args[])
 
       // bezier_ima.points=points;
       printf("min %f %f\n", bezier_ima.min.x, bezier_ima.min.y);
-      printf("max %f %f\n", bezier_ima.max.x, bezier_ima.max.y);	    
+      printf("max %f %f\n", bezier_ima.max.x, bezier_ima.max.y);
+      printf("total %d \n", bezier_ima.total);
+      printf("object %d \n", bezier_ima.object);
 
       if ( saveto != NULL)
 	{
