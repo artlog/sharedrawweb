@@ -130,11 +130,34 @@ void dump_xlines(FILE * f, struct sdlines * lines, char * varname)
   fprintf(f,"};\n");
 }
 
+int free_xlines(struct xlines ** built)
+{
+  if ( built != NULL )
+    {
+      if ( built[0] != NULL )
+	{
+	  free(built[0]);
+	  built[0]=NULL;
+	  return 0;
+	}
+    }
+  return -1;
+}
+		
 
-struct xlines * build_xlines(struct sdlines * lines, int start, int count)
+struct xlines * build_xlines(struct sdlines * lines, int start, int count, struct sdlines_matrix6 * matrix)
 {
   struct xlines * xlines = NULL;  
-  struct vectlist * vect = lines->first;
+  struct vectlist * vect = NULL;
+
+  if ( lines != NULL )
+    {
+      vect=lines->first;
+    }
+  else
+    {
+      return NULL;
+    }
 
   if ((start >= 0) && ( count > 0 ))
     {    
@@ -152,8 +175,15 @@ struct xlines * build_xlines(struct sdlines * lines, int start, int count)
 		      for ( int j=0; j<vect->index;j++)
 			{
 			  v=&vect->vector[j][0];
-			  points[j].x=(int)v[0];
-			  points[j].y=(int)v[1];
+			  if ( matrix == NULL )
+			    {
+			      points[j].x=(int)v[0];
+			      points[j].y=(int)v[1];
+			    }
+			  else
+			    {
+			      sdlines_matrix6_apply_matrix(matrix,v,&points[j]);
+			    }
 			}
 		      xlines[i-start].points=vect->index;
 		      xlines[i-start].vector=points;
@@ -165,4 +195,10 @@ struct xlines * build_xlines(struct sdlines * lines, int start, int count)
  
     }
   return xlines; 
+}
+
+void sdlines_matrix6_apply_matrix(struct sdlines_matrix6 * matrix, float * v, XPoint * dest )
+{
+  dest->x=(matrix->a * v[0]) + (matrix->c * v[1]) + matrix->e;
+  dest->y=(matrix->b * v[0]) + (matrix->d * v[1]) + matrix->f;
 }
