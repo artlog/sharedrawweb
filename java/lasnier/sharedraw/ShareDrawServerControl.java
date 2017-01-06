@@ -35,12 +35,9 @@ public class ShareDrawServerControl
     implements ItemListener
 {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 8611062519987592917L;
+    private static final long serialVersionUID = 8611062519987592917L;
 	
-	final static String DEFAULT_FILE="test.img";
+    final static String DEFAULT_FILE="test.img";
     final static String DEFAULT_COMPRESSED_FILE="compress.imc";
     
     ShareDrawServer thisServer = null;
@@ -68,6 +65,16 @@ public class ShareDrawServerControl
         }
       }
     );
+    Button buttonExportIma = new Button( "Export IMA");
+    buttonExportIma.addActionListener(
+      new ActionListener() {
+        public void actionPerformed(ActionEvent e)
+	{
+          thisServer.exportIMA(mImageNameTF.getText());
+        }
+      }
+    );
+
     Button buttonQuit = new Button( "Quit");
     buttonQuit.addActionListener(
       new ActionListener() {
@@ -80,7 +87,6 @@ public class ShareDrawServerControl
     buttonLoad.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          // thisServer.load(DEFAULT_FILE);
 	    thisServer.loadExpanded(mImageNameTF.getText());
         }
       }
@@ -109,14 +115,25 @@ public class ShareDrawServerControl
         }
       }
     );
+    Button buttonDebug = new Button( "Debug");
+    buttonClear.addActionListener(
+      new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          thisServer.setDebug(true);
+        }
+      }
+    );
+    
 
     add( mImageNameTF);
     add( buttonSave);
+    add( buttonExportIma);
     add( buttonQuit);
     add( buttonLoad);
     add( buttonImport);
     add( buttonAdd);
     add( buttonClear);
+    add( buttonDebug);
   }
 
   public void setServer( ShareDrawServer server)

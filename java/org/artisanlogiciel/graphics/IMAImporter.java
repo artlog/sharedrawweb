@@ -24,6 +24,11 @@ public class IMAImporter implements Importer
 		mStream=inputStream;
 	}
 
+    public void setDebug(boolean pDebug)
+    {
+	mDebug=pDebug;
+    }
+
 	@Override
 	public void importInto(ShareDrawing drawing)
 	{

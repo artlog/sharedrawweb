@@ -37,12 +37,15 @@ import java.util.ArrayList;
 
 import org.artisanlogiciel.graphics.IMAImporter;
 import org.artisanlogiciel.graphics.Importer;
+import org.artisanlogiciel.graphics.IMAWriter;
 
 public class ShareDrawServer implements
 ShareDrawServerMethods, Runnable {
 
   transient private ShareDrawing localImage;
   transient private ArrayList<ShareDrawClientMethods> localUsers;
+
+    private boolean mDebug=false;
 
   public static void main( String args[]) {
 
@@ -52,6 +55,11 @@ ShareDrawServerMethods, Runnable {
     control.setVisible(true);
     System.out.print( "server control started");
   }
+
+    public void setDebug(boolean pDebug)
+    {
+	mDebug = pDebug;
+    }
 
     public static ShareDrawServerControl launch()
     {
@@ -171,6 +179,22 @@ ShareDrawServerMethods, Runnable {
     }
   }
 
+    public void exportIMA( String ref) {
+	try 
+	{
+	    FileOutputStream fi = new FileOutputStream( ref);
+	    DataOutputStream out = new DataOutputStream( fi);
+	    IMAWriter writer = new IMAWriter(localImage.getLines());
+	    writer.writeTo( out );
+	    out.flush();
+	    fi.close();
+	}
+	catch( java.io.FileNotFoundException fnfe) {
+	}
+	catch ( java.io.IOException ioe) {
+	}
+    }
+
   public void load( String ref) {
     try {
       FileInputStream fi = new FileInputStream( ref);
@@ -212,7 +236,8 @@ ShareDrawServerMethods, Runnable {
     try {
         FileInputStream fi = new FileInputStream( ref);
         localImage = new ShareDrawing();
-        Importer importer = new IMAImporter(new DataInputStream( fi)); 
+        Importer importer = new IMAImporter(new DataInputStream( fi));
+	importer.setDebug(mDebug);
         localImage.importImage( importer);
       }
       catch( java.io.FileNotFoundException fnfe) {

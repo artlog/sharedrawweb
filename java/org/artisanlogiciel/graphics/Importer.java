@@ -5,5 +5,6 @@ import lasnier.sharedraw.ShareDrawing;
 public interface Importer {
 
 	void importInto(ShareDrawing drawing);
+    void setDebug(boolean pDebug);
 	
 }
