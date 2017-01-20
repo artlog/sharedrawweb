@@ -1,6 +1,9 @@
 #ifndef __INCLUDE_SDLINES_HEADER__
 #define __INCLUDE_SDLINES_HEADER__
 
+// for FILE
+#include <stdio.h>
+
 #include "sdpoint.h"
 #include "pointlist.h"
 
