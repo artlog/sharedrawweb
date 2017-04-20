@@ -5,7 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+// dependency need libxml2-dev package. 
 #include <libxml/xmlreader.h>
+
+#include "svgparser.h"
 
 #ifdef LIBXML_READER_ENABLED
 
@@ -13,48 +17,18 @@ int svgparser_debug=0;
 
 #define MAX_RECTS 54
 
-struct matrix6 {
-  float a;
-  float b;
-  float c;
-  float d;
-  float e;
-  float f;
-};
+struct svgparser_rect_context * r_context;
 
-struct svg_transform_matrix {
-  float coeff[6];
-};
-
-struct svg_rect {
-  char * id;
-  float width;
-  float height;
-  float x;
-  float y;
-  float ry;
-  struct svg_transform_matrix * transform;
-  char * path; // ugly but quick shortcut
-};
-
-struct sp {
-  float x;
-  float y;
-};
-  
-struct rect4 {
-  struct sp point[4];
-};
-
-struct rect_context
+struct svgparser_rect_context * svgparser_init_context(int max_rects)
 {
-  int rects;
-  // too bad hard coded value for inital dev for cube.
-  struct svg_rect rect[MAX_RECTS];
-};
-
-struct rect_context r_context;
-
+  struct svgparser_rect_context * context = (struct svgparser_rect_context *) calloc(1,sizeof(struct svgparser_rect_context) + (max_rects* sizeof(struct svg_rect)));
+  if ( context != NULL )
+    {
+      context->rects = 0;
+      context->max_rects = max_rects;
+    }
+  return context;
+}
 
 void usage()
 {
@@ -77,7 +51,7 @@ Allow that origin == dest ( use a temporary local variable ).
 */
 void svg_transform_matrix_apply_matrix(struct svg_transform_matrix * transform, struct svg_rect * orig, struct svg_rect * dest )
 {
-  struct matrix6 * matrix = (struct matrix6 *) transform;
+  struct svgparser_matrix6 * matrix = (struct svgparser_matrix6 *) transform;
   struct svg_rect temp;
   temp.x=(matrix->a * orig->x) + (matrix->c * orig->y) + matrix->e;
   temp.y=(matrix->b * orig->x) + (matrix->d * orig->y) + matrix->f;
@@ -88,9 +62,9 @@ void svg_transform_matrix_apply_matrix(struct svg_transform_matrix * transform, 
 /**
 apply transfrom to svg_rect to construct a rect4 structure of a line of points 
 */
-void svg_transform_matrix_rect_to_rect4(struct svg_transform_matrix * transform, struct svg_rect * orig, struct rect4 * dest )
+void svg_transform_matrix_rect_to_rect4(struct svg_transform_matrix * transform, struct svg_rect * orig, struct svgparser_rect4 * dest )
 {
-  struct matrix6 * matrix = (struct matrix6 *) transform;
+  struct svgparser_matrix6 * matrix = (struct svgparser_matrix6 *) transform;
   dest->point[0].x=(matrix->a * orig->x) + (matrix->c * orig->y) + matrix->e;
   dest->point[0].y=(matrix->b * orig->x) + (matrix->d * orig->y) + matrix->f;
 
@@ -104,7 +78,7 @@ void svg_transform_matrix_rect_to_rect4(struct svg_transform_matrix * transform,
   dest->point[3].y=(matrix->b * orig->x) + (matrix->d * ( orig->y + orig->height ) ) + matrix->f;
 }
 
-void rect4_dump( struct rect4 * rect, FILE * out)
+void rect4_dump( struct svgparser_rect4 * rect, FILE * out)
 {
   if ( rect != NULL )
     {
@@ -116,7 +90,7 @@ void rect4_dump( struct rect4 * rect, FILE * out)
     }
 }
 
-void rect4_dump_svgpath( struct rect4 * rect, FILE * out)
+void rect4_dump_svgpath( struct svgparser_rect4 * rect, FILE * out)
 {
   if ( rect != NULL )
     {
@@ -171,11 +145,11 @@ processNode(xmlTextReaderPtr reader) {
 	int attributesc=xmlTextReaderAttributeCount(reader);
 	if ( svgparser_debug > 0 )
 	  {
-	    printf("rect %d\n",r_context.rects); 
+	    printf("rect %d\n",r_context->rects); 
 	  }
-	if ( ( attributesc > 0 ) && ( r_context.rects < MAX_RECTS ))
+	if ( ( attributesc > 0 ) && ( r_context->rects < MAX_RECTS ))
 	  {
-	    struct svg_rect * this_rect=&(r_context.rect[r_context.rects]);
+	    struct svg_rect * this_rect=&(r_context->rect[r_context->rects]);
 	    this_rect->transform=NULL;
 	    char * dummy;
 	    xmlChar * xmlChar =	xmlTextReaderGetAttribute(reader,"id");
@@ -272,7 +246,7 @@ processNode(xmlTextReaderPtr reader) {
 	      {
 		svg_rect_dump(this_rect,stdout);
 	      }	      
-	    ++r_context.rects;
+	    ++r_context->rects;
 	  }	
       }
       else if (strncmp(name, "path",4) == 0 )
@@ -280,11 +254,11 @@ processNode(xmlTextReaderPtr reader) {
 	int attributesc=xmlTextReaderAttributeCount(reader);
 	if ( svgparser_debug > 0 )
 	  {
-	    printf("path %d\n",r_context.rects); 
+	    printf("path %d\n",r_context->rects); 
 	  }
-	if ( ( attributesc > 0 ) && ( r_context.rects < MAX_RECTS ))
+	if ( ( attributesc > 0 ) && ( r_context->rects < MAX_RECTS ))
 	  {
-	    struct svg_rect * this_rect=&(r_context.rect[r_context.rects]);
+	    struct svg_rect * this_rect=&(r_context->rect[r_context->rects]);
 	    this_rect->transform=NULL;
 	    char * dummy;
 	    xmlChar * xmlChar =	xmlTextReaderGetAttribute(reader,"id");
@@ -319,7 +293,7 @@ processNode(xmlTextReaderPtr reader) {
 		  }
 
 	      }
-	    ++r_context.rects;
+	    ++r_context->rects;
 	  }
       }
 }
@@ -353,11 +327,11 @@ streamFile(const char *filename) {
 
 void convert_to_svgpath()
 {
-  struct rect4 rectangle[MAX_RECTS];
+  struct svgparser_rect4 rectangle[MAX_RECTS];
   
-  for (int i=0 ; i < r_context.rects; i++)
+  for (int i=0 ; i < r_context->rects; i++)
     {
-      struct svg_rect * rect = &r_context.rect[i];
+      struct svg_rect * rect = &r_context->rect[i];
       if ( rect->path == NULL)
 	{
 	  svg_transform_matrix_rect_to_rect4(rect->transform,rect,&rectangle[i]);
@@ -374,11 +348,11 @@ void convert_to_svgpath()
 
 void dump_ids()
 {
-  struct rect4 rectangle[MAX_RECTS];
+  struct svgparser_rect4 rectangle[MAX_RECTS];
   
-  for (int i=0 ; i < r_context.rects; i++)
+  for (int i=0 ; i < r_context->rects; i++)
     {
-      struct svg_rect * rect = &r_context.rect[i];
+      struct svg_rect * rect = &r_context->rect[i];
       if ( rect->id != NULL)
 	{
 	  int l = strlen(rect->id);
@@ -425,7 +399,7 @@ int main(int argc, char **argv)
      */
     LIBXML_TEST_VERSION
 
-    r_context.rects= 0;
+    r_context = svgparser_init_context(MAX_RECTS);
 
     svgfilename=argv[1];
     streamFile(svgfilename);
