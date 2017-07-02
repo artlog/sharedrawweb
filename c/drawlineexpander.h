@@ -13,7 +13,12 @@ struct drawlineexpander
 };
 
 
-void drawlineexpander_init( struct drawlineexpander * this );
+/** initialsize is number of points expected , will grow as needed 
+don't forget to release it after user
+*/
+void drawlineexpander_init( struct drawlineexpander * this, int initialsize );
+
+void drawlineexpander_release( struct drawlineexpander * this);
 
 struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struct inputstream * input );
 

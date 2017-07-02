@@ -88,9 +88,14 @@ int main(int argc, char ** argv)
 		struct vectlist * vectlist = sdlines_get_vectlist(&sdlines,i);
 		if (vectlist != NULL )
 		  {
-		    drawlinecompressor_init(&compressor, vectlist_to_pointlist(vectlist));
-		    compressor.debug=debug_compressor;
-		    drawlinecompressor_compress(&compressor, &output);
+		    struct pointlist * pointlist = vectlist_to_pointlist(vectlist);
+		    if (pointlist != NULL )
+		      {
+			drawlinecompressor_init(&compressor, pointlist);
+			compressor.debug=debug_compressor;
+			drawlinecompressor_compress(&compressor, &output);
+			free(pointlist);
+		      }		    
 		  }
 		else
 		  {

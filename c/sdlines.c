@@ -238,12 +238,20 @@ struct vectlist * veclist_get_next(struct vectlist * this, int i)
 struct pointlist * vectlist_to_pointlist(struct vectlist * this)
 {
   struct pointlist * pointlist = new_pointlist();
+  // we already know how many points to add
+  pointlist_init(pointlist,this->index);
   for ( int i=0; i<this->index; i++)
     {
       struct sdpoint point;
       point.x=(int) this->vector[i][0];
       point.y=(int) this->vector[i][1];
-      pointlist_add(pointlist, &point);
+      if ( pointlist_add(pointlist, &point) == NULL )
+	{
+	  fprintf(stderr,"[ERROR] can't add a vectlist point into pointlist index %i\n", i);
+	  pointlist_release(pointlist);
+	  free(pointlist);
+	  return NULL;
+	}
     }
   return pointlist;
 }

@@ -10,6 +10,8 @@
 #include "sdlines.h"
 #include "imareader.h"
 
+#define EXPECTEDPOINTS 256
+
 void usage()
 {
   printf("read a .imc or .ima and convert it into c data to include in by example opengl\n");
@@ -119,17 +121,19 @@ int main(int argc, char ** argv)
 	  else
 	    {
 	      int lines = inputstream_readuint32(&input);
+	      int expectedpoints = EXPECTEDPOINTS;
 	      if (lines < 10000)
 		{
 		  for (int i=0; i< lines; i++)
 		    {
 		      if ( debug_expander > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),lines); }
-		      drawlineexpander_init(&expander);
+		      drawlineexpander_init(&expander,expectedpoints);
 		      expander.debug=1;
 		      drawlineexpander_expand(&expander, &input);
 		      if (debug_expander > 0 ) { pointlist_dump(expander.expandedLines); }
 		      pointlist_update_min_max(expander.expandedLines,&min,&max);
 		      pointlist_foreach(expander.expandedLines, &adapter);
+		      drawlineexpander_release(&expander);
 		    }
 		  sdpoint_dump(&max,"// max");
 		  sdpoint_dump(&min,"// min");

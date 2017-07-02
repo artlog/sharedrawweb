@@ -1,22 +1,32 @@
 //correspond to public class DrawLineExpander c translation
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "drawlineexpander.h"
 
 #define FALSE 0
 #define TRUE 1
 
-void drawlineexpander_init( struct drawlineexpander * this )
+void drawlineexpander_init( struct drawlineexpander * this, int initialsize )
 {
   memset(this,0,sizeof(*this));
   this->expandedLines = new_pointlist();
-  pointlist_init(this->expandedLines);
+  pointlist_init(this->expandedLines,initialsize);
   this->fieldreader = new_fieldreader();
   fieldreader_init(this->fieldreader);
   this->debug=0;
 }
 
+void drawlineexpander_release( struct drawlineexpander * this)
+{
+  if ( this->expandedLines != NULL )
+    {
+      pointlist_release(this->expandedLines);
+      free(this->expandedLines);
+      this->expandedLines = NULL;
+    }
+}
 struct sdpoint * drawlineexpander_readAbs(struct drawlineexpander *this, int size);
 
 struct sdpoint * drawlineexpander_readRel(struct drawlineexpander *this);

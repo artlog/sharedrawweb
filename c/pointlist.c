@@ -9,40 +9,91 @@ struct pointlist * new_pointlist()
   return malloc(sizeof(struct pointlist));
 }
 
-void pointlist_init(struct pointlist * this)
+struct pointarray * pointarray_new(int initialsize )
 {
-  this->count=0;  
+  struct pointarray * newarray = malloc( sizeof( struct pointarray) + sizeof( struct sdpoint) * (initialsize -1) );
+  return newarray;
 }
 
-void pointlist_add(struct pointlist * this,struct sdpoint * point)
+void pointlist_init(struct pointlist * this, int initialsize)
 {
-  // really lazzy unchecked implementation
-  if ( this->count < POINTSBYRECORD )
+  struct pointarray * newarray = pointarray_new(initialsize);
+  this->count=0;
+  this->array=newarray;
+  this->array->count=initialsize;
+}
+
+struct sdpoint * pointarray_add(struct pointarray * this,struct sdpoint * point, int index)
+{
+  struct sdpoint * added = NULL;
+  if ( index < 0 )
     {
-      memcpy( &(this->point[this->count]), point, sizeof(struct sdpoint));
-      this->count ++;
+      fprintf(stderr,"[FATAL] access to negative index of point pointarray %p index %i\n",this, index);      
+    }
+  if (index < this->count )
+    {
+      added=&(this->pointarray[index]);      
+      memcpy( added, point, sizeof(struct sdpoint));
+    }
+  return added;
+}
+
+struct sdpoint * pointlist_add(struct pointlist * this,struct sdpoint * point)
+{
+  struct pointarray * pointarray = this->array;
+  struct sdpoint * added = NULL;
+
+  if ( this->count == pointarray->count )
+    {
+      // double internal array
+      printf("DOUBLE %p pointarray %p  %i\n",this, pointarray,  pointarray->count);
+      struct pointarray * newarray = pointarray_new(pointarray->count *2);
+      if ( newarray == NULL )
+	{
+	  fprintf(stderr,"[ERROR] record point count exceed maximum size %u", this->count);
+	  return NULL;
+	}
+      else
+	{
+	  memcpy( newarray, pointarray, sizeof( struct pointarray) + sizeof( struct sdpoint) * ( pointarray->count - 1));
+	  newarray->count = pointarray->count *2;
+	  free( pointarray);
+	  this->array = newarray;
+	  pointarray = newarray;
+	}
     }
   else
+    if ( this->count > pointarray->count )
+      {
+	fprintf(stderr,"[FATAL] record point count exceed maximum index %u > %u (coding error or memory corruption)", this->count, pointarray->count);
+	return NULL;
+      }
+      
+  added=pointarray_add(pointarray, point, this->count);
+  if ( added != NULL )
     {
-      fprintf(stderr,"record point count exceed maximum size %u", this->count);
+      ++ this->count;
     }
+  return added;
 }
 
 struct sdpoint * pointlist_getlast(struct pointlist * this)
 {
-  if (this->count > 0)
+  if ( (this->count > 0) && (this->count <= this->array->count ) )
     {
-      return &this->point[this->count - 1];
+      return &this->array->pointarray[this->count - 1];
     }      
   return NULL;
 }
 
 void pointlist_dump(struct pointlist * this)
 {
+  struct sdpoint * pointarray = this->array->pointarray;
   printf("int[%u][2]={\n",this->count);
   for(int i =0; i< this->count; i++)
     {
-      printf("{%i,%i},\n", this->point[i].x, this->point[i].y);
+      
+      printf("{%i,%i},\n", pointarray[i].x, pointarray[i].y);
     }
   printf("};\n");
 }
@@ -81,20 +132,31 @@ void pointlist_update_min_max(struct pointlist * this, struct sdpoint * min, str
 {
   for(int i =0; i< this->count; i++)
     {
-      update_min_max( min, max, &this->point[i]);
+      update_min_max( min, max, &this->array->pointarray[i]);
     }  
 }
 
 void pointlist_foreach(struct pointlist * this, struct sdadapter * adapter)
 {
+  struct sdpoint * pointarray = this->array->pointarray;
   if ( adapter->f_before != NULL ) {
     (*adapter->f_before)( this, adapter, this->count);
   }
   for(int i =0; i< this->count; i++)
     {
-      (*adapter->f_for_each)( this, &this->point[i], adapter);
+      (*adapter->f_for_each)( this, &pointarray[i], adapter);
     }
   if ( adapter->f_after != NULL ) {
     (*adapter->f_after)( this, adapter);
   }
+}
+
+void pointlist_release(struct pointlist * this)
+{
+  if (this->array != NULL )
+    {
+      free(this->array);
+      this->array = NULL;
+      this->count = 0;
+    }      
 }
