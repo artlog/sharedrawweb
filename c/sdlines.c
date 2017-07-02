@@ -202,3 +202,48 @@ void sdlines_matrix6_apply_matrix(struct sdlines_matrix6 * matrix, float * v, XP
   dest->x=(matrix->a * v[0]) + (matrix->c * v[1]) + matrix->e;
   dest->y=(matrix->b * v[0]) + (matrix->d * v[1]) + matrix->f;
 }
+
+
+struct vectlist * sdlines_get_vectlist(struct sdlines * this, int i)
+{
+  struct vectlist * current = this->first;
+  int j = 0;
+  
+  while ( ( j < i ) && ( current != NULL ) )
+    {
+      current = current->next;
+      ++j;
+    }
+  return current;
+}
+
+struct vectlist * veclist_get_next(struct vectlist * this, int i)
+{
+  struct vectlist * current = this;
+  int j = 0;
+
+  if ( j > i )
+    {
+      return NULL;
+    }
+	
+  while ( ( j < i ) && ( current != NULL ) )
+    {
+      current = current->next;
+      ++j;
+    }
+  return current;  
+}
+
+struct pointlist * vectlist_to_pointlist(struct vectlist * this)
+{
+  struct pointlist * pointlist = new_pointlist();
+  for ( int i=0; i<this->index; i++)
+    {
+      struct sdpoint point;
+      point.x=(int) this->vector[i][0];
+      point.y=(int) this->vector[i][1];
+      pointlist_add(pointlist, &point);
+    }
+  return pointlist;
+}

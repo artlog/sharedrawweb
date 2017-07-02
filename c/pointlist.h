@@ -14,8 +14,11 @@ struct sdadapter {
   int width;
   int height;
   int count;
+  // run once before looping on each element (header) can be NULL
   void (*f_before) (struct pointlist * this, struct sdadapter * adapter, int count);
+  // run for each element (content) SHOULD be set (ie non NULL)
   void (*f_for_each) (struct pointlist * this, struct sdpoint * point, struct sdadapter * adapter);
+  // run after for each (footer/collector) can be NULL
   void (*f_after) (struct pointlist * this, struct sdadapter * adapter);
   void * data;  
 };

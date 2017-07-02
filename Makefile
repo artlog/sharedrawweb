@@ -8,17 +8,27 @@ CPPFLAGS=-g
 
 BUILD=build
 
-libsrc=c/drawlineexpander.c c/fieldreader.c c/pointlist.c c/sdpoint.c c/inputstream.c c/imareader.c c/sdlines.c
+# FIXME imareader should not be part of that
+libsrc=c/drawlinecommon.c c/drawlineexpander.c c/fieldreader.c c/pointlist.c c/sdpoint.c c/inputstream.c c/sdlines.c c/imareader.c
+libsrccomp=c/drawlinecommon.c c/drawlinecompressor.c c/bitfieldwriter.c c/pointlist.c c/sdpoint.c c/outputstream.c c/sdlines.c c/imareader.c c/inputstream.c
 src=c/main.c
 libraries=alexpander
+srccomp=c/compressor.c
 
 objects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(src))
 libobjects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(libsrc))
+objectscomp=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(srccomp))
+libobjectscomp=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(libsrccomp))
+
+
 
 # default target is to build libraries
 libs: $(patsubst %,$(BUILD)/lib/lib%.a,$(libraries))
 
 $(BUILD)/lib/libalexpander.a: $(libobjects)
+	ar rccs $@ $^
+
+$(BUILD)/lib/libalcompressor.a: $(libobjectscomp)
 	ar rccs $@ $^
 
 libinclude:
@@ -30,13 +40,18 @@ $(objects): | $(BUILD)/obj
 $(libobjects): | $(BUILD)/lib
 
 
-test: $(BUILD)/expander
+test: $(BUILD)/expander $(BUILD)/compressor
 	$(BUILD)/expander alphabet/j.imc jchar
 	mv jchar generated/j_data.h
+	$(BUILD)/compressor flat3.1.ima flattest.imc
 
 $(BUILD)/expander: $(BUILD)/lib/libalexpander.a $(objects) 
 	@echo link expander objects $(objects) and libalexpander
 	$(LD) -o $@ $(LDFLAGS) $(objects) -L$(BUILD)/lib -Wl,-Bstatic -lalexpander -Wl,-Bdynamic
+
+$(BUILD)/compressor: $(BUILD)/lib/libalcompressor.a $(objectscomp) 
+	@echo link compressor objects $(objectscomp) and libalcompressor
+	$(LD) -o $@ $(LDFLAGS) $(objectscomp) -L$(BUILD)/lib -Wl,-Bstatic -lalcompressor -Wl,-Bdynamic
 
 $(BUILD)/svgparser: c/svgparser.c
 	gcc `xml2-config --cflags` `xml2-config --libs` $^ -o $@

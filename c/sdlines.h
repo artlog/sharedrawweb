@@ -10,8 +10,11 @@
 #include<X11/Xlib.h>
 
 struct vectlist {
+  // NULL for last
   struct vectlist * next;
+  // current index withing dynamically allocated vector
   int index;
+  // wil be allocated dynamically for a maximum count number of elements
   float vector[1][3];
 };
 
@@ -78,5 +81,16 @@ struct xlines * build_xlines(struct sdlines * lines, int start, int count, struc
  returns 0 of OK everything else if not freed
 **/
 int free_xlines(struct xlines ** built);
+
+/** get ith veclist of sdlines  */
+struct vectlist * sdlines_get_vectlist(struct sdlines * this, int i);
+
+/** skips i elements from this vectlist */
+struct vectlist * veclist_get_next(struct vectlist * this, int i);
+
+/**
+convert a vectlist to a newly allocated pointlist
+**/
+struct pointlist * vectlist_to_pointlist(struct vectlist * this);
   
 #endif

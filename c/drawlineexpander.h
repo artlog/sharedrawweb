@@ -1,15 +1,13 @@
-#include "sdpoint.h"
-#include "pointlist.h"
-#include "fieldreader.h"
+#ifndef _DRAWLINEEXPANDER_H_
+#define _DRAWLINEEXPANDER_H_
 
-#define SCODE_MAX 4
+#include "fieldreader.h"
+#include "drawlinecommon.h"
 
 struct drawlineexpander
 {
   struct pointlist *expandedLines;
   int currentSize;
-  // code for size encoding
-  int scode[5];
   struct bitfieldreader * fieldreader;
   int debug;
 };
@@ -18,3 +16,5 @@ struct drawlineexpander
 void drawlineexpander_init( struct drawlineexpander * this );
 
 struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struct inputstream * input );
+
+#endif
