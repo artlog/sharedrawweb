@@ -161,9 +161,10 @@ void imaimporter_importInto_sharedrawing (struct imaimporter * this, struct shar
       x = readUnsignedByte(this->mStream);
       y = readUnsignedByte(this->mStream);
       // special beam on/off
-      if ( ( x == 0xff ) && ( y >= 0xfe ) )
+      if ( ( x == IMA_X_BEAN_CONTROL ) &&
+	   (( y == IMA_Y_BEAN_OFF ) || ( y == IMA_Y_BEAN_ON )) )
 	{
-	  this->mBeanOn = ( y == 0xff);
+	  this->mBeanOn = ( y == IMA_Y_BEAN_ON );
 	  if ( this->mDebug )
 	    {
 	      printf("beam change at %i %i\n",this->mIndex,this->mBeanOn);

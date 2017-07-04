@@ -3,6 +3,7 @@
 
 #include "sdlines.h"
 #include "inputstream.h"
+#include "imacommon.h"
 
 int filename_is_ima(char * filename);
 

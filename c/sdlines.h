@@ -92,5 +92,16 @@ struct vectlist * veclist_get_next(struct vectlist * this, int i);
 convert a vectlist to a newly allocated pointlist
 **/
 struct pointlist * vectlist_to_pointlist(struct vectlist * this);
+
+struct sdlines_iterator_callback {
+  // run once before looping on each element (header) can be NULL
+  void (*f_before) (struct sdlines * this, struct sdlines_iterator_callback * callback, void * data);
+  // run for each element (content) SHOULD be set (ie non NULL) index is line index
+  void (*f_for_each) (struct sdlines * this, struct sdlines_iterator_callback * callback, struct vectlist * line, int index, struct vectlist * next, void * data);
+  // run after for each (footer/collector) can be NULL
+  void (*f_after) (struct sdlines * this, struct sdlines_iterator_callback * callback, void * data);
+};
+
+void sdlines_foreach(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data);
   
 #endif

@@ -52,12 +52,12 @@ int main(int argc, char ** argv)
 
       inputfilename=argv[1];
 
-      int fd = open( inputfilename, 0);
-      if ( fd != - 1 )
+      FILE * file = fopen( inputfilename, "r");
+      if ( file != NULL )
 	{
 	  int readok = 0;
 	  
-	  inputstream_init(&input, fd);
+	  inputstream_init(&input, fileno(file));
 	  input.debug=1;
 
 	  if ( filename_is_ima(inputfilename) )
@@ -79,8 +79,7 @@ int main(int argc, char ** argv)
 		fprintf(stderr,"[ERROR] can't create %s\n", varname);
 		exit(1);
 	      }
-	    int fdout = fileno(genfile);
-	    outputstream_init(&output,fdout);	   
+	    outputstream_init(&output,genfile);	   
 	    outputstream_writeint32(&output,sdlines.lines);
 	    for (int i=0; i< sdlines.lines; i++)
 	      {
@@ -103,10 +102,10 @@ int main(int argc, char ** argv)
 		    exit(1);
 		  }
 	      }
-	    close(fdout);
+	    fclose(genfile);
 	    readok = 1;
 	  }
-	  close(fd);
+	  fclose(file);
 	}
       else
 	{

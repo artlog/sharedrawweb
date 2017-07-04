@@ -2,9 +2,20 @@
 #include <stdio.h>
 #include "outputstream.h"
 
-void outputstream_init(struct outputstream * stream, int fd)
+void outputstream_init(struct outputstream * stream, FILE * file)
 {
-  stream->fd = fd;
+  stream->file=file;
+  stream->fd = fileno(file);
+}
+
+int outputstream_getfd(struct outputstream * stream)
+{
+  return stream->fd;
+}
+
+FILE * outputstream_file(struct outputstream * stream)
+{
+  return stream->file;
 }
 
 void outputstream_writeint32(struct outputstream * stream, int word)
