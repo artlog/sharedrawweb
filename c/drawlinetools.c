@@ -41,8 +41,12 @@ int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct inputst
   struct sdpoint min, max;
   
   struct sdadapter adapter={
+    /*
     .cx=-100,
     .cy=-100,
+    */
+    .cx=0,
+    .cy=0,
     /*
     .width=200,
     .height=-200,// negative to match standard y axis
@@ -62,7 +66,7 @@ int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct inputst
     {
       for (int i=0; i< lines; i++)
 	{
-	  if ( debug > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),lines); }
+	  if ( debug > 0) { fprintf(stdout, "Line %u/%u\n", (i+1),lines); }
 	  drawlineexpander_init(this,expectedpoints);
 	  this->debug=debug;
 	  drawlineexpander_expand(this, input);
@@ -70,8 +74,8 @@ int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct inputst
 	  pointlist_update_min_max(this->expandedLines,&min,&max);
 	  pointlist_foreach(this->expandedLines, &adapter);
 	  drawlineexpander_release(this);
-	  ++ readok;	    
-	}
+	  ++ readok;
+	}      
       sdpoint_dump(&max,"// max");
       sdpoint_dump(&min,"// min");
       if ( debug > 0 )
