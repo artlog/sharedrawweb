@@ -5,7 +5,7 @@
 
 struct bitfieldreader * new_fieldreader()
 {
-  return malloc(sizeof(struct bitfieldreader));
+  return calloc(1,sizeof(struct bitfieldreader));
 }
 
 void fieldreader_init(struct bitfieldreader * this)

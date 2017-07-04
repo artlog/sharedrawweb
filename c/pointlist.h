@@ -15,9 +15,13 @@ struct pointlist {
 };
 
 struct sdadapter {
+  // center.x
   int cx;
+  // center.y
   int cy;
+  // width divider ( ie vector [0..1] <=> point [0..witdh] )
   int width;
+  // height divider
   int height;
   int count;
   // run once before looping on each element (header) can be NULL
