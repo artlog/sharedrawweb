@@ -2,6 +2,63 @@
 .IMA format is an old proprietary format for laser show program
 it contain a list of point the laser beam should goe through,
 x=255 has a special meaning to hide (255,254) ( send beam into the box) or show it (255,255): let is flow outside.
+
+very old code : 
+
+int LitGraph(char *chemin,BYTE* buffer)
+{
+int nboct,i;
+int fimage;
+fimage=open(chemin,O_RDONLY|O_BINARY);
+nboct = filelength(fimage);
+if (!(eof(fimage))) read(fimage,buffer,nboct);
+close(fimage);
+return(nboct);
+}
+
+int SauvGraph(char *chemin,BYTE* buffer)
+{
+int nboct,i;
+int fimage;
+nboct=4+*(WORD*)buffer;
+fimage=open(chemin,O_WRONLY|O_BINARY|O_CREAT,S_IREAD|S_IWRITE);
+write(fimage,buffer,nboct);
+close(fimage);
+return(0);
+}
+
+void NewImage(BYTE* buffer)
+{
+*((WORD*)buffer)=2;
+buffer[2]=0;
+buffer[3]=0xC8;
+buffer[4]=255;
+buffer[5]=254;
+}
+
+setcolor(couleur2);
+maff= 0;
+nboct=4+*(WORD*)buffer;
+if (nboct>4)
+{
+	for(i=4;i<nboct;i+=2)
+	{
+	x = buffer[i];
+	y = 255-buffer[i+1];
+	if (x==255)
+	   {
+	   if (y==1) setcolor(couleur1) ;
+	   if (y==0) setcolor(couleur2) ;
+	   }
+	else
+	   {
+	   if (compress) {x=transp(x-dcx,lx);y=transp(y-dcy,ly);}
+	   if (maff==0) moveto(x,y); else lineto(x,y);
+	   maff=1;
+	   }
+	}      // fin du loop d'affichage de points
+}
+
 */
 
 #include <stdlib.h>
@@ -148,14 +205,17 @@ void imaimporter_importInto_sharedrawing (struct imaimporter * this, struct shar
   struct sharedrawingline * line = NULL;
   this->mBeanOn = FALSE;
 
-  // little endian unsigned short
-  int pointCount = readUnsignedByte(this->mStream);
-  pointCount = ( 256 * readUnsignedByte(this->mStream) ) + pointCount;
+  // little endian unsigned 16bits
+  int byteCount = readUnsignedByte(this->mStream);
+  byteCount = ( 256 * readUnsignedByte(this->mStream) ) + byteCount;
+  
+  // here should read 0xC8 then 0x00
+  
   if ( this->mDebug )
     {
-      printf("point count: %i\n",pointCount);
+      printf("byte count: %i\n",byteCount);
     }
-  for (int j = 0 ; j < pointCount; j+=2)
+  for (int j = 0 ; j < byteCount; j+=2)
     {
       this->mIndex=j;
       x = readUnsignedByte(this->mStream);

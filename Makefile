@@ -10,7 +10,7 @@ BUILD=build
 
 # FIXME imareader should not be part of that
 libsrc=c/drawlinecommon.c c/drawlineexpander.c c/fieldreader.c c/pointlist.c c/sdpoint.c c/inputstream.c c/sdlines.c c/drawlinetools.c c/imareader.c
-libsrccomp=c/drawlinecommon.c c/drawlinecompressor.c c/bitfieldwriter.c c/pointlist.c c/sdpoint.c c/outputstream.c c/sdlines.c c/imareader.c c/inputstream.c
+libsrccomp=c/drawlinecommon.c c/drawlinecompressor.c c/bitfieldwriter.c c/pointlist.c c/sdpoint.c c/outputstream.c c/sdlines.c c/imareader.c c/inputstream.c c/imawriter.c
 src=c/main.c
 libraries=alexpander
 srccomp=c/compressor.c

@@ -9,6 +9,7 @@
 #include "drawlinecompressor.h"
 #include "sdlines.h"
 #include "imareader.h"
+#include "imawriter.h"
 
 void usage()
 {
@@ -65,6 +66,19 @@ int main(int argc, char ** argv)
 	      printf("Ima file detected '%s'\n", inputfilename);
 	      read_ima( &input, &sdlines);
 	      readok = 1;
+
+	      char * checkima = "check.ima";
+	      FILE * genfile = fopen( checkima, "w");
+	      if ( genfile == NULL )
+		{
+		  fprintf(stderr,"[ERROR] can't create %s\n", checkima );
+		  exit(1);
+		}
+	      outputstream_init(&output,genfile);
+	      write_ima(&output,&sdlines);
+	      fflush(genfile);
+	      fclose(genfile);
+	      
 	    }
 	  else
 	    {

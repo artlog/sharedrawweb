@@ -1,6 +1,7 @@
 #ifndef _IMAWRITER_H_
 #define _IMAWRITER_H_
 
+#include "imacommon.h"
 #include "sdlines.h"
 #include "outputstream.h"
 
