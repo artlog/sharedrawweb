@@ -103,5 +103,8 @@ struct sdlines_iterator_callback {
 };
 
 void sdlines_foreach(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data);
-  
+
+// call foreach twice, one with callback_collect then with callback_complete
+void dump_generic_callbacks(struct sdlines * lines, struct sdlines_iterator_callback * callback_collect, struct sdlines_iterator_callback * callback_complete, void * data);
+
 #endif

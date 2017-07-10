@@ -21,7 +21,6 @@ void usage()
   printf("will create a c file named flat containing struct xline flat content\n wihtin current directory");
 }
 
-int debug_compressor=1;
 
 int main(int argc, char ** argv)
 {
@@ -30,6 +29,8 @@ int main(int argc, char ** argv)
       struct drawlinecompressor compressor;
       struct inputstream input;
       struct outputstream output;
+      int debug_compressor=0;
+      
       struct sdlines sdlines={
 	.lines=0,
 	.first=NULL,	
@@ -59,7 +60,7 @@ int main(int argc, char ** argv)
 	  int readok = 0;
 	  
 	  inputstream_init(&input, fileno(file));
-	  input.debug=1;
+	  input.debug=debug_compressor;
 
 	  if ( filename_is_ima(inputfilename) )
 	    {
