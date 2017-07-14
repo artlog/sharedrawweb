@@ -46,89 +46,174 @@ void sdlines_add_vectlist(struct sdlines * lines, struct vectlist * vect)
     }
 }
 
-void dump_sdlines(struct sdlines * lines, char * varname)
+struct dump_sdlines_data {
+  char * varname;
+};
+
+void dump_sdlines_content(struct sdlines * this, struct sdlines_iterator_callback * callback, struct vectlist * line, int index, struct vectlist * next, void * data)
 {
-  struct vectlist * vect = lines->first;
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
+  float* v;
+  char * varname = ((struct dump_sdlines_data *) data)->varname;
+  printf("float %s_l%i[%i][2]={",varname,index,line->index);
+  v=&line->vector[0][0];
+  printf("{%f,%f}",v[0],v[1]);
+  for ( int j=1; j<line->index;j++)
     {
-      float* v;  
-      printf("float %s_l%i[%i][2]={",varname,i,vect->index);
-      v=&vect->vector[0][0];
-      printf("{%f,%f}",v[0],v[1]);
-      for ( int j=1; j<vect->index;j++)
-	{
-	  v=&vect->vector[j][0];
-	  printf(",\n{%f,%f}",v[0],v[1]);
-	}
-      printf("};\n");
-      vect=vect->next;
-      if ( vect !=NULL)
-	{
-	  printf("\n");
-	}
-    } 
-  vect=lines->first;
-  printf("struct sdlines { int points; float (*vector)[2];};\n");
-  printf("struct sdlines %s[%i]={\n",varname, lines->lines);
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
-    {      
-      printf("{.points=%i,.vector=%s_l%i}",vect->index,varname,i);
-      vect=vect->next;
-      if ( vect != NULL)
-	{
-	  printf(",\n");
-	}
-    }
-  if ( vect != NULL )
-    {
-      printf("??? points=%i ????",vect->index);
+      v=&line->vector[j][0];
+      printf(",\n{%f,%f}",v[0],v[1]);
     }
   printf("};\n");
+  if ( next !=NULL)
+    {
+      printf("\n");
+    }
 }
 
-void dump_xlines(FILE * f, struct sdlines * lines, char * varname)
+void dump_sdlines_content_ref_header(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data)
 {
-  struct vectlist * vect = lines->first;
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
+  char * varname = ((struct dump_sdlines_data *) data)->varname;
+  printf("struct sdlines { int points; float (*vector)[2];};\n");
+  printf("struct sdlines %s[%i]={\n",varname, this->lines);
+}
+
+void dump_sdlines_content_ref(struct sdlines * this, struct sdlines_iterator_callback * callback, struct vectlist * line, int index, struct vectlist * next, void * data)
+{
+  char * varname = ((struct dump_sdlines_data *) data)->varname;
+  printf("{.points=%i,.vector=%s_l%i}",line->index,varname,index);
+  if ( next != NULL)
     {
-      float* v;  
-      fprintf(f,"XPoint %s_l%i[%i]={\n",varname,i,vect->index);
-      v=&vect->vector[0][0];
-      fprintf(f,"{%i,%i}",(int) v[0],(int) v[1]);
-      for ( int j=1; j<vect->index;j++)
-	{
-	  if ( j % 5 == 0 )
-	    {
-	      fprintf(f,"\n");
-	    }
-	  v=&vect->vector[j][0];
-	  fprintf(f,",{%i,%i}",(int) v[0],(int) v[1]);
-	}
-      fprintf(f,"\n};\n");
-      vect=vect->next;
-      if ( vect !=NULL)
+      printf(",\n");
+    }  
+}
+
+void dump_sdlines_content_ref_footer(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data)
+{
+  printf("};\n");  
+}
+
+
+struct dump_xlines_data {
+  char * varname;
+  FILE * file;
+};
+
+
+void dump_xlines_content(struct sdlines * this, struct sdlines_iterator_callback * callback, struct vectlist * line, int index, struct vectlist * next, void * data)
+{
+  float* v;
+  struct dump_xlines_data * xlines_data = (struct dump_xlines_data *) data;
+  char * varname = xlines_data->varname;
+  FILE * f = xlines_data->file;
+
+  fprintf(f,"XPoint %s_l%i[%i]={\n",varname,index,line->index);
+  v=&line->vector[0][0];
+  fprintf(f,"{%i,%i}",(int) v[0],(int) v[1]);
+  for ( int j=1; j<line->index;j++)
+    {
+      if ( j % 5 == 0 )
 	{
 	  fprintf(f,"\n");
 	}
-    } 
-  vect=lines->first;
-  fprintf(f,"\nstruct xlines { int points; XPoint *vector;};\n");
-  fprintf(f,"\nstruct xlines %s[%i]={\n",varname, lines->lines);
-  for (int i=0; (i < lines->lines) && (vect != NULL); i++)
-    {      
-      fprintf(f,"{.points=%i,.vector=%s_l%i}",vect->index,varname,i);
-      vect=vect->next;
-      if ( vect != NULL)
-	{
-	  fprintf(f,",\n");
-	}
+      v=&line->vector[j][0];
+      fprintf(f,",{%i,%i}",(int) v[0],(int) v[1]);
     }
-  if ( vect != NULL )
+  fprintf(f,"\n};\n");
+  if ( next !=NULL)
     {
-      printf("??? points=%i ????",vect->index);
+      fprintf(f,"\n");
     }
-  fprintf(f,"};\n");
 }
+
+void dump_xlines_content_ref_header(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data)
+{
+  struct dump_xlines_data * xlines_data = (struct dump_xlines_data *) data;
+  char * varname = xlines_data->varname;
+  FILE * f = xlines_data->file;
+  
+  fprintf(f,"\nstruct xlines { int points; XPoint *vector;};\n");
+  fprintf(f,"\nstruct xlines %s[%i]={\n",varname, this->lines);
+
+}
+
+void dump_xlines_content_ref(struct sdlines * this, struct sdlines_iterator_callback * callback, struct vectlist * line, int index, struct vectlist * next, void * data)
+{
+  struct dump_xlines_data * xlines_data = (struct dump_xlines_data *) data;
+  char * varname = xlines_data->varname;
+  FILE * f = xlines_data->file;
+
+  fprintf(f,"{.points=%i,.vector=%s_l%i}",line->index,varname,index);
+  if ( next != NULL)
+    {
+      fprintf(f,",\n");
+    }
+
+}
+
+void dump_xlines_content_ref_footer(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data)
+{
+  struct dump_xlines_data * xlines_data = (struct dump_xlines_data *) data;
+  // char * varname = xlines_data->varname;
+  FILE * f = xlines_data->file;
+
+  fprintf(f,"};\n");  
+}
+
+
+void dump_generic_callbacks(struct sdlines * lines, struct sdlines_iterator_callback * dump_sdlines_callback_content, struct sdlines_iterator_callback * dump_sdlines_callback_content_ref, void * data)
+{
+
+  if ( dump_sdlines_callback_content != NULL )
+    {
+      sdlines_foreach(lines, dump_sdlines_callback_content, data);
+    }
+
+  if ( dump_sdlines_callback_content_ref != NULL )
+    {
+      sdlines_foreach(lines, dump_sdlines_callback_content_ref, data);
+    }
+}
+
+struct sdlines_iterator_callback dump_sdlines_callback_content = {
+  .f_before=NULL,
+  .f_for_each=dump_sdlines_content,
+  .f_after=NULL
+};
+
+struct sdlines_iterator_callback dump_sdlines_callback_content_ref = {
+  .f_before=dump_sdlines_content_ref_header,
+  .f_for_each=dump_sdlines_content_ref,
+  .f_after=dump_sdlines_content_ref_footer
+};
+
+void dump_sdlines(struct sdlines * lines, char * varname)
+{
+  struct dump_sdlines_data  dump_sdlines_data;
+  dump_sdlines_data.varname = varname;
+
+  dump_generic_callbacks(lines,&dump_sdlines_callback_content,&dump_sdlines_callback_content_ref, (void *) &dump_sdlines_data);
+}
+
+struct sdlines_iterator_callback dump_xlines_callback_content = {
+  .f_before=NULL,
+  .f_for_each=dump_xlines_content,
+  .f_after=NULL
+};
+
+struct sdlines_iterator_callback dump_xlines_callback_content_ref = {
+  .f_before=dump_xlines_content_ref_header,
+  .f_for_each=dump_xlines_content_ref,
+  .f_after=dump_xlines_content_ref_footer
+};
+
+void dump_xlines(FILE * f, struct sdlines * lines, char * varname)
+{
+  struct dump_xlines_data  dump_xlines_data;
+  dump_xlines_data.varname = varname;
+  dump_xlines_data.file = f;
+
+  dump_generic_callbacks(lines,&dump_xlines_callback_content,&dump_xlines_callback_content_ref, (void *) &dump_xlines_data);
+}
+
 
 int free_xlines(struct xlines ** built)
 {
@@ -201,4 +286,79 @@ void sdlines_matrix6_apply_matrix(struct sdlines_matrix6 * matrix, float * v, XP
 {
   dest->x=(matrix->a * v[0]) + (matrix->c * v[1]) + matrix->e;
   dest->y=(matrix->b * v[0]) + (matrix->d * v[1]) + matrix->f;
+}
+
+
+struct vectlist * sdlines_get_vectlist(struct sdlines * this, int i)
+{
+  struct vectlist * current = this->first;
+  int j = 0;
+  
+  while ( ( j < i ) && ( current != NULL ) )
+    {
+      current = current->next;
+      ++j;
+    }
+  return current;
+}
+
+struct vectlist * veclist_get_next(struct vectlist * this, int i)
+{
+  struct vectlist * current = this;
+  int j = 0;
+
+  if ( j > i )
+    {
+      return NULL;
+    }
+	
+  while ( ( j < i ) && ( current != NULL ) )
+    {
+      current = current->next;
+      ++j;
+    }
+  return current;  
+}
+
+struct pointlist * vectlist_to_pointlist(struct vectlist * this)
+{
+  struct pointlist * pointlist = new_pointlist();
+  // we already know how many points to add
+  pointlist_init(pointlist,this->index);
+  for ( int i=0; i<this->index; i++)
+    {
+      struct sdpoint point;
+      point.x=(int) this->vector[i][0];
+      point.y=(int) this->vector[i][1];
+      if ( pointlist_add(pointlist, &point) == NULL )
+	{
+	  fprintf(stderr,"[ERROR] can't add a vectlist point into pointlist index %i\n", i);
+	  pointlist_release(pointlist);
+	  free(pointlist);
+	  return NULL;
+	}
+    }
+  return pointlist;
+}
+
+
+void sdlines_foreach(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data)
+{
+  if (callback->f_before != NULL)
+    {
+      (*callback->f_before)(this,callback,data);
+    }
+  if (callback->f_for_each != NULL)
+    {
+      struct vectlist * vect = this->first;
+      for (int i=0; (i < this->lines) && (vect != NULL); i++)
+	{
+	  (*callback->f_for_each)(this,callback,vect,i,vect->next,data);
+	  vect=vect->next;
+	}
+    }
+  if (callback->f_after != NULL)
+    {
+      (*callback->f_after)(this,callback,data);
+    }  
 }

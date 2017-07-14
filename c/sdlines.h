@@ -10,8 +10,11 @@
 #include<X11/Xlib.h>
 
 struct vectlist {
+  // NULL for last
   struct vectlist * next;
+  // current index withing dynamically allocated vector
   int index;
+  // wil be allocated dynamically for a maximum count number of elements
   float vector[1][3];
 };
 
@@ -78,5 +81,30 @@ struct xlines * build_xlines(struct sdlines * lines, int start, int count, struc
  returns 0 of OK everything else if not freed
 **/
 int free_xlines(struct xlines ** built);
-  
+
+/** get ith veclist of sdlines  */
+struct vectlist * sdlines_get_vectlist(struct sdlines * this, int i);
+
+/** skips i elements from this vectlist */
+struct vectlist * veclist_get_next(struct vectlist * this, int i);
+
+/**
+convert a vectlist to a newly allocated pointlist
+**/
+struct pointlist * vectlist_to_pointlist(struct vectlist * this);
+
+struct sdlines_iterator_callback {
+  // run once before looping on each element (header) can be NULL
+  void (*f_before) (struct sdlines * this, struct sdlines_iterator_callback * callback, void * data);
+  // run for each element (content) SHOULD be set (ie non NULL) index is line index
+  void (*f_for_each) (struct sdlines * this, struct sdlines_iterator_callback * callback, struct vectlist * line, int index, struct vectlist * next, void * data);
+  // run after for each (footer/collector) can be NULL
+  void (*f_after) (struct sdlines * this, struct sdlines_iterator_callback * callback, void * data);
+};
+
+void sdlines_foreach(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data);
+
+// call foreach twice, one with callback_collect then with callback_complete
+void dump_generic_callbacks(struct sdlines * lines, struct sdlines_iterator_callback * callback_collect, struct sdlines_iterator_callback * callback_complete, void * data);
+
 #endif

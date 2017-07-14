@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-#include "drawlineexpander.h"
+#include "drawlinetools.h"
 #include "sdlines.h"
 #include "imareader.h"
 
@@ -22,36 +22,6 @@ void usage()
 
 int debug_expander=0;
 
-void setup_adapter(struct pointlist * this, struct sdadapter * adapter, int count)
-{
-  if (adapter == NULL)
-    {
-      fprintf(stderr,"adapter is NULL\n");
-      return;
-    }
-  struct sdlines * lines = adapter->data;
-  if ( lines == NULL)
-    {
-      fprintf(stderr, "data is NULL should have been created before");
-      return;
-    }
-    {
-      struct vectlist * vect = vectlist_new(count);
-      sdlines_add_vectlist(lines,vect);
-    }
-}
-
-void close_adapter(struct pointlist * this, struct sdadapter * adapter)
-{
-}
-
-void adapt_point(struct pointlist * this, struct sdpoint * point, struct sdadapter * adapter)
-{
-  struct sdlines * lines = adapter->data;
-  struct vectlist *vect = lines->last;
-  set_vector( &vect->vector[vect->index][0], point, adapter);
-  vect->index++;
-} 
 
 int main(int argc, char ** argv)
 {
@@ -61,30 +31,21 @@ int main(int argc, char ** argv)
     {
       struct drawlineexpander expander;
       struct inputstream input;
-      struct sdpoint min,max;
-      struct sdlines sdlines={
+       struct sdlines sdlines={
 	.lines=0,
 	.first=NULL,	
 	.last=NULL
       };
-      struct sdadapter adapter={
-	.cx=-100,
-	.cy=-100,
-	.width=200, 
-	.height=-200,// negative to match standard y axis
-	.f_before=setup_adapter,
-	.f_for_each=adapt_point,
-	.f_after=close_adapter,
-	.data=&sdlines
-      };
       char* varname;
       char* inputfilename;
 
+      /** WHY ?
       if ( genxlines == 1 )
 	{
 	  adapter.width=1;
 	  adapter.height=1;
 	}
+      **/
       if ( argc > 2 )
 	{
 	  varname=argv[2];
@@ -118,27 +79,7 @@ int main(int argc, char ** argv)
 	    }
 	  else
 	    {
-	      int lines = inputstream_readuint32(&input);
-	      if (lines < 10000)
-		{
-		  for (int i=0; i< lines; i++)
-		    {
-		      if ( debug_expander > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),lines); }
-		      drawlineexpander_init(&expander);
-		      expander.debug=1;
-		      drawlineexpander_expand(&expander, &input);
-		      if (debug_expander > 0 ) { pointlist_dump(expander.expandedLines); }
-		      pointlist_update_min_max(expander.expandedLines,&min,&max);
-		      pointlist_foreach(expander.expandedLines, &adapter);
-		    }
-		  sdpoint_dump(&max,"// max");
-		  sdpoint_dump(&min,"// min");
-		  readok = 1;
-		}
-	      else
-		{
-		  fprintf(stderr, "Too many lines %xh", lines);
-		}
+	      readok = drawlineexpander_read_sdlines( &expander, &input, &sdlines);
 	    }
 	  if (readok)
 	  {

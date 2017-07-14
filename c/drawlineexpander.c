@@ -1,28 +1,32 @@
 //correspond to public class DrawLineExpander c translation
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "drawlineexpander.h"
 
 #define FALSE 0
 #define TRUE 1
 
-struct drawlineexpander initdrawline = {
-  .currentSize=0,
-  .scode={3,6,14,30,64}
-};
-
-void drawlineexpander_init( struct drawlineexpander * this )
+void drawlineexpander_init( struct drawlineexpander * this, int initialsize )
 {
-  memcpy(this,&initdrawline, sizeof(*this));
+  memset(this,0,sizeof(*this));
   this->expandedLines = new_pointlist();
-  pointlist_init(this->expandedLines);
+  pointlist_init(this->expandedLines,initialsize);
   this->fieldreader = new_fieldreader();
   fieldreader_init(this->fieldreader);
   this->debug=0;
 }
 
-
+void drawlineexpander_release( struct drawlineexpander * this)
+{
+  if ( this->expandedLines != NULL )
+    {
+      pointlist_release(this->expandedLines);
+      free(this->expandedLines);
+      this->expandedLines = NULL;
+    }
+}
 struct sdpoint * drawlineexpander_readAbs(struct drawlineexpander *this, int size);
 
 struct sdpoint * drawlineexpander_readRel(struct drawlineexpander *this);
@@ -129,18 +133,18 @@ struct sdpoint * drawlineexpander_readRel(struct drawlineexpander *this)
   // find index of current size
   for ( index = 0; index < SCODE_MAX; index ++)
   {
-    if ( this->scode[index] == this->currentSize ) break;
+    if ( global_scode[index] == this->currentSize ) break;
   }
 
   if (this->debug)
     {
-      fprintf(stderr,"index %u size %u \n",index, this->scode[index]);
+      fprintf(stderr,"index %u size %u \n",index, global_scode[index]);
     }
 
   // read size modifier until it is good one
-  while ( fieldreader_read( this->fieldreader,1) != 0 )
+  while ( fieldreader_read( this->fieldreader,1) != SCODE_SAME )
     {
-      index = index + ( ( fieldreader_read( this->fieldreader, 1) == 0 ) ? -1 : 1);
+      index = index + ( ( fieldreader_read( this->fieldreader, 1) == ( SCODE_PREVIOUS & 0x01 ) ) ? -1 : 1);
       // handle circularity
       if ( index > SCODE_MAX )
 	{
@@ -151,7 +155,7 @@ struct sdpoint * drawlineexpander_readRel(struct drawlineexpander *this)
 	  index = SCODE_MAX;
 	}
     }
-  return drawlineexpander_readAbs( this,  this->scode[index]);
+  return drawlineexpander_readAbs( this,  global_scode[index]);
 }
 
 /* write given struct sdpoint * with size */
