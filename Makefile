@@ -54,7 +54,7 @@ $(BUILD)/compressor: $(BUILD)/lib/libalcompressor.a $(objectscomp)
 	$(LD) -o $@ $(LDFLAGS) $(objectscomp) -L$(BUILD)/lib -Wl,-Bstatic -lalcompressor -Wl,-Bdynamic
 
 $(BUILD)/svgparser: c/svgparser.c
-	gcc `xml2-config --cflags` `xml2-config --libs` $^ -o $@
+	gcc `xml2-config --cflags` $^ `xml2-config --libs` -o $@
 
 $(BUILD)/obj:
 	mkdir -p $@
