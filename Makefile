@@ -70,7 +70,7 @@ $(BUILD)/include/%.h: c/%.h $(BUILD)/include
 
 $(BUILD)/obj/%.o: c/%.c $(BUILD)/obj
 	@echo compile $< 
-	@$(CC) -Wall -c $(CFLAGS) $(CPPFLAGS) $< -o $@
+	@$(CC) -Wall -I$(ARTLOG_TOOLBOX)/build/include -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 dist/bezier: c/bezier.c c/svgpath.c
 	$(CC) -Wall  -I$(ARTLOG_TOOLBOX)/build/include -o $@ $^ -Wl,-Bstatic -L$(ARTLOG_TOOLBOX)/build/lib  -lallist -Wl,-Bdynamic
