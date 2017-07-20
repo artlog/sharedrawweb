@@ -8,27 +8,25 @@ CPPFLAGS=-g
 
 BUILD=build
 
-# FIXME imareader should not be part of that
-libsrc=c/drawlinecommon.c c/drawlineexpander.c c/fieldreader.c c/pointlist.c c/sdpoint.c c/inputstream.c c/sdlines.c c/drawlinetools.c c/imareader.c
-libsrccomp=c/drawlinecommon.c c/drawlinecompressor.c c/bitfieldwriter.c c/pointlist.c c/sdpoint.c c/outputstream.c c/sdlines.c c/imareader.c c/inputstream.c c/imawriter.c
+libsrcexp=c/fieldreader.c c/drawlineexpander.c c/inputstream.c c/imareader.c
+libsrccomp=c/bitfieldwriter.c c/drawlinecompressor.c c/outputstream.c c/imawriter.c
+
+libsrc=c/drawlinecommon.c c/pointlist.c c/sdpoint.c c/sdlines.c c/drawlinetools.c $(libsrcexp) $(libsrccomp)
+
+libraries=alima
+
+# expander main
 src=c/main.c
-libraries=alexpander
+# compressor main
 srccomp=c/compressor.c
 
 objects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(src))
 libobjects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(libsrc))
-objectscomp=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(srccomp))
-libobjectscomp=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(libsrccomp))
-
-
 
 # default target is to build libraries
 libs: $(patsubst %,$(BUILD)/lib/lib%.a,$(libraries))
 
-$(BUILD)/lib/libalexpander.a: $(libobjects)
-	ar rccs $@ $^
-
-$(BUILD)/lib/libalcompressor.a: $(libobjectscomp)
+$(BUILD)/lib/libalima.a: $(libobjects)
 	ar rccs $@ $^
 
 libinclude:
@@ -45,11 +43,11 @@ test: $(BUILD)/expander $(BUILD)/compressor
 	mv jchar generated/j_data.h
 	$(BUILD)/compressor flat3.1.ima flattest.imc
 
-$(BUILD)/expander: $(BUILD)/lib/libalexpander.a $(objects) 
+$(BUILD)/expander: $(BUILD)/lib/libalima.a $(objects) 
 	@echo link expander objects $(objects) and libalexpander
 	$(LD) -o $@ $(LDFLAGS) $(objects) -L$(BUILD)/lib -Wl,-Bstatic -lalexpander -Wl,-Bdynamic
 
-$(BUILD)/compressor: $(BUILD)/lib/libalcompressor.a $(objectscomp) 
+$(BUILD)/compressor: $(BUILD)/lib/libalima.a $(objectscomp) 
 	@echo link compressor objects $(objectscomp) and libalcompressor
 	$(LD) -o $@ $(LDFLAGS) $(objectscomp) -L$(BUILD)/lib -Wl,-Bstatic -lalcompressor -Wl,-Bdynamic
 
