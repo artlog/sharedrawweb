@@ -26,7 +26,6 @@ int main(int argc, char ** argv)
 {
   if ( argc > 1)
     {
-      struct drawlinecompressor compressor;
       struct inputstream input;
       struct outputstream output;
       int debug_compressor=0;
@@ -39,7 +38,6 @@ int main(int argc, char ** argv)
 
       char* varname;
       char* inputfilename;
-
 
       if ( argc > 2 )
 	{
@@ -93,29 +91,11 @@ int main(int argc, char ** argv)
 	      {
 		fprintf(stderr,"[ERROR] can't create %s\n", varname);
 		exit(1);
-	      }
-	    outputstream_init(&output,genfile);	   
-	    outputstream_writeint32(&output,sdlines.lines);
-	    for (int i=0; i< sdlines.lines; i++)
+	      }	    
+	    outputstream_init(&output,genfile);
+	    if ( ! drawlinecompressor_writeimc(&sdlines,&output,debug))
 	      {
-		if ( debug_compressor > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),sdlines.lines); }
-		struct vectlist * vectlist = sdlines_get_vectlist(&sdlines,i);
-		if (vectlist != NULL )
-		  {
-		    struct pointlist * pointlist = vectlist_to_pointlist(vectlist);
-		    if (pointlist != NULL )
-		      {
-			drawlinecompressor_init(&compressor, pointlist);
-			compressor.debug=debug_compressor;
-			drawlinecompressor_compress(&compressor, &output);
-			free(pointlist);
-		      }		    
-		  }
-		else
-		  {
-		    fprintf(stderr,"[ERROR] can't get %ith  line\n", i);
-		    exit(1);
-		  }
+		exit(1);
 	      }
 	    fclose(genfile);
 	    readok = 1;

@@ -258,3 +258,31 @@ void drawlinecompressor_writeAbs( struct drawlinecompressor * this,struct sdpoin
 }
 
 
+int drawlinecompressor_write_imc(struct outputstream * output,struct sdlines * sdlines, int debug)
+{
+  struct drawlinecompressor compressor;
+  outputstream_writeint32(output,sdlines->lines);
+  for (int i=0; i< sdlines->lines; i++)
+    {
+      if ( debug > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),sdlines->lines); }
+      struct vectlist * vectlist = sdlines_get_vectlist(sdlines,i);
+      if (vectlist != NULL )
+	{
+	  struct pointlist * pointlist = vectlist_to_pointlist(vectlist);
+	  if (pointlist != NULL )
+	    {
+	      drawlinecompressor_init(&compressor, pointlist);
+	      compressor.debug=debug;
+	      drawlinecompressor_compress(&compressor, output);
+	      free(pointlist);
+	    }	    
+	}
+      else
+	{
+	  fprintf(stderr,"[ERROR] drawlinecompressor_saveimc can't get %ith  line\n", i);
+	  return 0;
+	}
+    }
+  return 1;
+}
+
