@@ -27,7 +27,6 @@ void write_ima_content_ref_header(struct sdlines * this, struct sdlines_iterator
 {
   struct dump_sdlines_data * sdlines_data =  (struct dump_sdlines_data *) data;
   struct outputstream * stream = sdlines_data->stream;
-  int bytes = sdlines_data->bytes + 2;
   if (stream->debug)
     {
       printf("{\"count\":%i",this->lines);

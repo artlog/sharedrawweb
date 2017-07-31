@@ -93,7 +93,7 @@ int main(int argc, char ** argv)
 		exit(1);
 	      }	    
 	    outputstream_init(&output,genfile);
-	    if ( ! drawlinecompressor_writeimc(&sdlines,&output,debug))
+	    if ( ! drawlinecompressor_write_imc(&sdlines,&output,debug_compressor))
 	      {
 		exit(1);
 	      }

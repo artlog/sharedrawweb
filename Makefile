@@ -8,8 +8,8 @@ CPPFLAGS=-g
 
 BUILD=build
 
-libsrcexp=c/fieldreader.c c/drawlineexpander.c c/inputstream.c c/imareader.c
-libsrccomp=c/bitfieldwriter.c c/drawlinecompressor.c c/outputstream.c c/imawriter.c
+libsrcexp=c/fieldreader.c c/drawlineexpander.c c/imareader.c
+libsrccomp=c/bitfieldwriter.c c/drawlinecompressor.c  c/imawriter.c
 
 libsrc=c/drawlinecommon.c c/pointlist.c c/sdpoint.c c/sdlines.c c/drawlinetools.c $(libsrcexp) $(libsrccomp)
 
@@ -21,6 +21,7 @@ src=c/main.c
 srccomp=c/compressor.c
 
 objects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(src))
+objectscomp=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(srccomp))
 libobjects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(libsrc))
 
 # default target is to build libraries
@@ -44,12 +45,12 @@ test: $(BUILD)/expander $(BUILD)/compressor
 	$(BUILD)/compressor flat3.1.ima flattest.imc
 
 $(BUILD)/expander: $(BUILD)/lib/libalima.a $(objects) 
-	@echo link expander objects $(objects) and libalexpander
-	$(LD) -o $@ $(LDFLAGS) $(objects) -L$(BUILD)/lib -Wl,-Bstatic -lalexpander -Wl,-Bdynamic
+	@echo link expander objects $(objects) and libalima
+	$(LD) -o $@ $(LDFLAGS) $(objects) -L$(BUILD)/lib -Wl,-Bstatic -lalima -L$(ARTLOG_TOOLBOX)/build/lib -lalcommon -laldev -Wl,-Bdynamic
 
 $(BUILD)/compressor: $(BUILD)/lib/libalima.a $(objectscomp) 
-	@echo link compressor objects $(objectscomp) and libalcompressor
-	$(LD) -o $@ $(LDFLAGS) $(objectscomp) -L$(BUILD)/lib -Wl,-Bstatic -lalcompressor -Wl,-Bdynamic
+	@echo link compressor objects $(objectscomp) and libalima
+	$(LD) -o $@ $(LDFLAGS) $(objectscomp) -L$(BUILD)/lib -Wl,-Bstatic -lalima -L$(ARTLOG_TOOLBOX)/build/lib -lalcommon -laldev -Wl,-Bdynamic
 
 $(BUILD)/svgparser: c/svgparser.c
 	gcc `xml2-config --cflags` $^ `xml2-config --libs` -o $@
