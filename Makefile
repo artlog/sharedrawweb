@@ -24,7 +24,9 @@ objects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(src))
 objectscomp=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(srccomp))
 libobjects=$(patsubst c/%.c,$(BUILD)/obj/%.o,$(libsrc))
 
-# default target is to build libraries
+# default target is to build all
+all: libs libinclude
+
 libs: $(patsubst %,$(BUILD)/lib/lib%.a,$(libraries))
 
 $(BUILD)/lib/libalima.a: $(libobjects)
@@ -80,7 +82,7 @@ test_bezier: dist/bezier
 clean:
 	rm -rf $(BUILD)
 
-.PHONY:clean test libs libinclude test_bezier
+.PHONY:clean test libs libinclude test_bezier all
 
 # needed to keep those files within include after make ( remove unused )
 .PRECIOUS: $(BUILD)/include/%.h

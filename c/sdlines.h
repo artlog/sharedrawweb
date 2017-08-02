@@ -20,8 +20,6 @@ enum {
   SDLINE_GROWABLE=16
 };
 
-#define FLAG_IS_SET(x,flag) (x & flag) != 0
-
 struct vectbuffer {
   int allocated;
     // wil be allocated dynamically for a maximum count number of elements
