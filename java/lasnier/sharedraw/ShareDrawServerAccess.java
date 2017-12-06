@@ -33,6 +33,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 public class ShareDrawServerAccess
 implements ShareDrawServerMethods, Runnable {
 
@@ -197,8 +199,8 @@ implements ShareDrawServerMethods, Runnable {
 	switch ( pCommand )
 	{
 	    case METH_ADDLINE:
-		ShareDrawingLine line = (ShareDrawingLine) objectinputstream.readObject();
-		// ShareDrawingLine line = new ShareDrawingLine();
+		DrawingLine line = (DrawingLine) objectinputstream.readObject();
+		// DrawingLine line = new DrawingLine();
 		// line.readObject( objectinputstream );
 		mServer.addLine( line);
 		break;
@@ -223,7 +225,7 @@ implements ShareDrawServerMethods, Runnable {
 		break;
 	    case METH_GETLINE:
 		int lineindex = objectinputstream.readInt();
-		ShareDrawingLine gotline = mServer.getLine( lineindex );
+		DrawingLine gotline = mServer.getLine( lineindex );
 		objectoutputstream.writeInt(ACK_RETURN);
 		objectoutputstream.writeObject( gotline);
 		objectoutputstream.flush();
@@ -269,7 +271,7 @@ implements ShareDrawServerMethods, Runnable {
       }
   }
 
-  public synchronized void addLine( ShareDrawingLine line)
+  public synchronized void addLine( DrawingLine line)
       throws RemoteException
   {
       try
@@ -370,12 +372,12 @@ implements ShareDrawServerMethods, Runnable {
       handleremoteexception();
   }
 
-  public synchronized ShareDrawingLine getLine( int pLineIndex)
+  public synchronized DrawingLine getLine( int pLineIndex)
       throws
     RemoteException,
     DrawException
   {
-      ShareDrawingLine line = null;
+      DrawingLine line = null;
       System.out.println( "getLine(" + pLineIndex  +")");
       try
       {
@@ -383,7 +385,7 @@ implements ShareDrawServerMethods, Runnable {
 	  objectoutputstream.writeInt( pLineIndex);
 	  objectoutputstream.flush();
 	  handleexception();
-	  line = (ShareDrawingLine) objectinputstream.readObject();
+	  line = (DrawingLine) objectinputstream.readObject();
       }
       catch ( IOException io )
       {

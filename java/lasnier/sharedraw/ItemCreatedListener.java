@@ -19,6 +19,8 @@
 
 package lasnier.sharedraw;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+    
 interface ItemCreatedListener {
-  public void receiveItemCreated( ShareDrawingLine line) ;
+  public void receiveItemCreated( DrawingLine line) ;
 }

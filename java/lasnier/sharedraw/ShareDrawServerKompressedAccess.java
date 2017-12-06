@@ -31,6 +31,8 @@ package lasnier.sharedraw;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 public class ShareDrawServerKompressedAccess
 extends ShareDrawServerAccess {
 
@@ -69,11 +71,11 @@ extends ShareDrawServerAccess {
 	       RemoteException
     {
 	boolean error = false;
-	ShareDrawingLine line = null; 
+	DrawingLine line = null; 
 	switch ( pCommand)
 	    {
 	    case METH_KOMP_ADDLINE:
-		line = new ShareDrawingLine();
+		line = new DrawingLine();
 		line.loadExpanded(mInputStream);
 		mServer.addLine(line);
 		break;
@@ -95,7 +97,7 @@ extends ShareDrawServerAccess {
     }
     
 
-  public synchronized void addLine( ShareDrawingLine line)
+  public synchronized void addLine( DrawingLine line)
       throws RemoteException
   {
       try
@@ -113,12 +115,12 @@ extends ShareDrawServerAccess {
       handleremoteexception();
   }
 
-  public synchronized ShareDrawingLine getLine( int pLineIndex)
+  public synchronized DrawingLine getLine( int pLineIndex)
       throws
     RemoteException,
     DrawException
   {
-      ShareDrawingLine line = null;
+      DrawingLine line = null;
       System.out.println( "getLine(" + pLineIndex  +")");
       try
       {
@@ -126,7 +128,7 @@ extends ShareDrawServerAccess {
 	  objectoutputstream.writeInt( pLineIndex);
 	  objectoutputstream.flush();
 	  handleexception();
-	  line = new ShareDrawingLine();
+	  line = new DrawingLine();
 	  line.loadExpanded(mInputStream);
       }
       catch ( IOException io )

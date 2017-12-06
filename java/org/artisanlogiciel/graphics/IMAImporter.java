@@ -3,9 +3,6 @@ package org.artisanlogiciel.graphics;
 import java.awt.Point;
 import java.io.DataInputStream;
 
-import lasnier.sharedraw.ShareDrawing;
-import lasnier.sharedraw.ShareDrawingLine;
-
 /**
 .IMA format is an old proprietary format for laser show program
 it contain a list of point the laser beam should goe through,
@@ -30,10 +27,10 @@ public class IMAImporter implements Importer
     }
 
 	@Override
-	public void importInto(ShareDrawing drawing)
+	public void importInto(Drawing drawing)
 	{
 		int x,y;
-		ShareDrawingLine line = null;
+		DrawingLine line = null;
 		mBeanOn = false;
 		try {
 			// little endian unsigned short
@@ -68,7 +65,7 @@ public class IMAImporter implements Importer
 					{
 						if (line == null )
 						{
-							line = new ShareDrawingLine();
+							line = new DrawingLine();
 						}
 						line.addPoint(new Point(x,y));					
 					}

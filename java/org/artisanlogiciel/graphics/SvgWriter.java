@@ -5,19 +5,17 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import lasnier.sharedraw.ShareDrawingLine;
-
 /**
- * Write a ShareDrwaLine (using its internal Vector representation) into svg
+ * Write a DrawLine (using its internal Vector representation) into svg
  * 
  * @author philippe
  *
  */
 public class SvgWriter {
 
-	private final ArrayList<ShareDrawingLine> mLines;
+	private final ArrayList<DrawingLine> mLines;
 	
-	public SvgWriter(ArrayList<ShareDrawingLine> pLines)
+	public SvgWriter(ArrayList<DrawingLine> pLines)
 	{
 		mLines = pLines;
 	}
@@ -27,7 +25,7 @@ public class SvgWriter {
 	{
 		pData.writeChars("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
 		pData.writeChars("<svg>");
-		for (ShareDrawingLine line : mLines)
+		for (DrawingLine line : mLines)
 		{
 			pData.writeChars("<g><path ");
 			pData.writeChars("style=\"fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1\" d=\"");

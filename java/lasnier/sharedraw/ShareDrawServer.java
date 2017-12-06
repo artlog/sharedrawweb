@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import org.artisanlogiciel.graphics.IMAImporter;
 import org.artisanlogiciel.graphics.Importer;
 import org.artisanlogiciel.graphics.IMAWriter;
+import org.artisanlogiciel.graphics.DrawingLine;
 
 public class ShareDrawServer implements
 ShareDrawServerMethods, Runnable {
@@ -155,12 +156,12 @@ ShareDrawServerMethods, Runnable {
       reset();
   }
 
-  public void addLine( ShareDrawingLine line) {
+  public void addLine( DrawingLine line) {
     /* line is cloned to not use same reference as caller
        once added (by a client) line can't be changed
     */
     try {
-      localImage.addLine( (ShareDrawingLine) line.clone());
+      localImage.addLine( (DrawingLine) line.clone());
     }
     catch( java.lang.CloneNotSupportedException exception) {
       return;
@@ -284,7 +285,7 @@ ShareDrawServerMethods, Runnable {
   */
   public void resetClient( ShareDrawClientMethods user)
   {
-    for ( ShareDrawingLine line : localImage.getInternLines())
+    for ( DrawingLine line : localImage.getInternLines())
     {
 		try
 		{
@@ -334,7 +335,7 @@ ShareDrawServerMethods, Runnable {
     localUsers.remove( client);
   }
 
-  private void updateClients( ShareDrawingLine line) {
+  private void updateClients( DrawingLine line) {
     for (ShareDrawClientMethods user : localUsers) {
       try {
         user.addLine( line);
@@ -350,7 +351,7 @@ ShareDrawServerMethods, Runnable {
     System.exit(0);
   }
 
-  public ShareDrawingLine getLine( int lineindex) throws
+  public DrawingLine getLine( int lineindex) throws
     RemoteException,
     ResetException,
     NoMoreLineException {

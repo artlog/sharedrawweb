@@ -26,12 +26,14 @@ package lasnier.sharedraw;
 import java.awt.*;
 import java.awt.event.*;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 class ShareDrawingLineEditor
     extends Panel
     implements MouseListener,  MouseMotionListener
 {
     // line currently edited
-    ShareDrawingLine drawingLine;
+    DrawingLine drawingLine;
     // full drawing
     ShareDrawing fullDrawing;
     ItemCreatedListener itemCreatedListener;
@@ -42,10 +44,10 @@ class ShareDrawingLineEditor
       addMouseMotionListener(this);
       addMouseListener(this);
       fullDrawing = null;
-      drawingLine = new ShareDrawingLine();
+      drawingLine = new DrawingLine();
     }
   
-    public void setDrawingLine( ShareDrawingLine line)
+    public void setDrawingLine( DrawingLine line)
     {
       drawingLine = line;
     }
@@ -87,7 +89,7 @@ class ShareDrawingLineEditor
         if ( itemCreatedListener != null) {
           itemCreatedListener.receiveItemCreated( drawingLine);
         }
-        drawingLine = new ShareDrawingLine();
+        drawingLine = new DrawingLine();
       }      
     }
 
@@ -103,14 +105,14 @@ class ShareDrawingLineEditor
     {
     }
 
-    public void refreshLine( ShareDrawingLine line)
+    public void refreshLine( DrawingLine line)
     {
-      line.paint( getGraphics());
+	ShareDrawing.paintLine(line, getGraphics());
     }
 
     public void paint(Graphics g)
     {
-      drawingLine.paint( g);
+	refreshLine(drawingLine);
       if ( fullDrawing != null)
       {
         fullDrawing.paint( g);

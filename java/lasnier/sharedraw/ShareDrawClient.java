@@ -32,6 +32,8 @@ package lasnier.sharedraw;
 import java.awt.Frame;
 import java.io.Serializable;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 public class ShareDrawClient implements
   ItemCreatedListener,
   ShareDrawClientMethods,
@@ -48,7 +50,7 @@ public class ShareDrawClient implements
     drawingServer = null;
   }
 
-  public void receiveItemCreated( ShareDrawingLine line)  {
+  public void receiveItemCreated( DrawingLine line)  {
     try {
       if ( drawingServer != null) {
         drawingServer.addLine( line);
@@ -59,9 +61,9 @@ public class ShareDrawClient implements
     }
   }
 
-  public void addLine( ShareDrawingLine line)
+  public void addLine( DrawingLine line)
   {
-    ShareDrawingLine copy = null;
+    DrawingLine copy = null;
     if (localImage == null) {
       localImage = new ShareDrawing();
       if (lineEditor != null) {
@@ -72,7 +74,7 @@ public class ShareDrawClient implements
        once added (by a server) line can't be changed
     */
     try {
-      copy = (ShareDrawingLine) line.clone();
+      copy = (DrawingLine) line.clone();
       localImage.addLine( copy );
     }
     catch( java.lang.CloneNotSupportedException exception) {

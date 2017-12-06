@@ -21,7 +21,7 @@ package lasnier.sharedraw;
 
 import java.io.Serializable;
 
-class NoMoreLineException extends DrawException implements Serializable {
+public class NoMoreLineException extends DrawException implements Serializable {
   public NoMoreLineException() {
     super();
   }

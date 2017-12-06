@@ -28,11 +28,13 @@
 */
 package lasnier.sharedraw;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 public interface ShareDrawClientMethods {
 
   public int getNextLineIndex();
 
-  public void addLine( ShareDrawingLine line) throws lasnier.sharedraw.RemoteException;
+  public void addLine( DrawingLine line) throws lasnier.sharedraw.RemoteException;
 
   public void reset() throws lasnier.sharedraw.RemoteException;
 

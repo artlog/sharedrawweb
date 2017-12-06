@@ -19,7 +19,7 @@
 
 package lasnier.sharedraw;
 
-class ResetException extends DrawException {
+public class ResetException extends DrawException {
   public ResetException() {
     super();
   }

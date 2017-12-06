@@ -19,10 +19,12 @@
 
 package lasnier.sharedraw;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 class ImageHeuristic {
-    void addLineTo( ShareDrawingLine line, ShareDrawing draw) {
+    void addLineTo( DrawingLine line, ShareDrawing draw) {
     }
-    void removeLineFrom( ShareDrawingLine line, ShareDrawing draw) {
+    void removeLineFrom( DrawingLine line, ShareDrawing draw) {
     }
     void reduceImage(  ShareDrawing draw) {
     }

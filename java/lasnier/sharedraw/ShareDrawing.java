@@ -28,106 +28,44 @@
 */
 package lasnier.sharedraw;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
 
-import org.artisanlogiciel.graphics.Importer;
+import org.artisanlogiciel.graphics.Drawing;
+import org.artisanlogiciel.graphics.DrawingLine;
 
 public class ShareDrawing
+extends Drawing
 {
-
-  private ArrayList<ShareDrawingLine> lines;
 
   public ShareDrawing()
   {
-    reset();
+      super();
   }
 
-  public void reset() {
-    lines = new ArrayList<ShareDrawingLine>(10);
+  public static void paintLine(DrawingLine line, Graphics g) {
+    /* draw the current lines */
+    g.setColor(Color.black);
+    g.setPaintMode();
+    Point previous = null;
+    for (Point current:line.internalGetPoints() ) {
+      if ( previous == null ) {
+        previous = current;
+      }
+      g.drawLine(previous.x, previous.y, current.x, current.y);
+      previous = current;
+    }
   }
 
   public void paint( Graphics g) {
-    for (ShareDrawingLine line : lines )
+    for (DrawingLine line : getInternLines() )
     {
-      line.paint( g);
+	paintLine(line, g);
     }
-  }
-
-  public void addLine( ShareDrawingLine line) {
-    lines.add( line);
-  }
-
-  public void saveLines( DataOutputStream destination) throws
-    java.io.IOException {
-    destination.writeInt( lines.size());
-    for ( ShareDrawingLine line : lines )
-    {
-      line.save( destination);
-    }
-  }
-
-  public void loadLines( DataInputStream source) throws
-    java.io.IOException {
-    int nb_lines = source.readInt();
-    ShareDrawingLine line;
-    for ( int i = 0; i < nb_lines; i++ ) {
-      line = new ShareDrawingLine();
-      line.load( source);
-      lines.add( line);
-    }
-  }
-  
-  public void importImage( Importer importer) throws
-	    java.io.IOException 
-  {
-	  importer.importInto(this);
-  }
-
-  public void saveLinesKompressed( DataOutputStream destination) throws
-    java.io.IOException {
-    destination.writeInt( lines.size());    
-    for ( ShareDrawingLine line : lines )
-    {
-      line.saveKompressed( destination);
-    }
-  }
-
-  public void loadLinesExpanded( DataInputStream source) throws
-    java.io.IOException {
-    // DrawLineExpander expander = new DrawLineExpander();
-    int nb_lines = source.readInt();
-    ShareDrawingLine line;
-    for ( int i = 0; i < nb_lines; i++ ) {
-      line = new ShareDrawingLine();
-      line.loadExpanded( source);
-      lines.add( line);
-    }
-  }
-
-  public int length() {
-    return lines.size();
-  }
-
-  public ShareDrawingLine getLine( int line) throws ResetException, NoMoreLineException {
-    if ( line == lines.size() ) {
-      throw new NoMoreLineException();
-    }
-    if ( line > lines.size() ) {
-      throw new ResetException();
-    }
-    return (ShareDrawingLine) lines.get( line);
-  }
-
-  public ArrayList<ShareDrawingLine> getLines() { 
-	return new ArrayList<ShareDrawingLine>(lines);
-  }
-  
-  /** Not a copy, use with care */
-  public ArrayList<ShareDrawingLine> getInternLines() { 
-	return lines;
   }
 
 }

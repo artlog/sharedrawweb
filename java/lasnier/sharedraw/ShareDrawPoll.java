@@ -25,6 +25,8 @@
 */
 package lasnier.sharedraw;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 public class ShareDrawPoll extends Thread {
 
   transient private ShareDrawServerMethods drawServer;
@@ -75,7 +77,7 @@ public class ShareDrawPoll extends Thread {
 
   private void pollServer() {
 
-    ShareDrawingLine line = null;
+    DrawingLine line = null;
     try {
       line = drawServer.getLine(drawClient.getNextLineIndex());
       drawClient.addLine( line);

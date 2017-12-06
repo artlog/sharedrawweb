@@ -1,29 +1,9 @@
-/*
-    This file is part of ShareDrawWeb.
-
-    ShareDrawWeb is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    ShareDrawWeb is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with ShareDrawWeb; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- */
 /**
- ShareDrawingLine
+ DrawingLine
  keep track of list of Points constituting a line
 */
-package lasnier.sharedraw;
+package org.artisanlogiciel.graphics;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -35,17 +15,12 @@ import java.util.ArrayList;
 import org.artisanlogiciel.compression.graphics.DrawLineExpander;
 import org.artisanlogiciel.compression.graphics.DrawLineKompressor;
 
-public class ShareDrawingLine implements Cloneable, Serializable
+public class DrawingLine implements Cloneable, Serializable
 {
 
-  /**
-   * 
-   */
-    private static final long serialVersionUID = -1334999216030995504L;
-	
     ArrayList<Point> lines;
 
-  public ShareDrawingLine() {
+  public DrawingLine() {
     lines = new ArrayList<>();
   }
 
@@ -106,27 +81,16 @@ public class ShareDrawingLine implements Cloneable, Serializable
     lines = expander.expand( source);
   }
 
-  public void paint(Graphics g) {
-    int np = lines.size();
-
-    /* draw the current lines */
-    g.setColor(Color.black);
-    g.setPaintMode();
-    Point previous = null;
-    for (int i=0; i < np; i++) {
-      Point current = (Point) lines.get(i);
-      if ( i == 0 ) {
-        previous = current;
-      }
-      g.drawLine(previous.x, previous.y, current.x, current.y);
-      previous = current;
-    }
-  }
-
-	public ArrayList<Point> getPoints() {
+    public ArrayList<Point> getPoints() {
 	
-		return new ArrayList<Point>(lines); 
-	}
+	return new ArrayList<Point>(lines); 
+    }
+
+    public ArrayList<Point> internalGetPoints() {
+	
+	return lines; 
+    }
+    
 
 }
 

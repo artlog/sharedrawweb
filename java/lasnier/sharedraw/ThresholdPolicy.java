@@ -24,6 +24,8 @@ package lasnier.sharedraw;
  @author philippe lhardy
  */
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
 class ThresholdPolicy implements ImageChangeListener {
 
   int threshold;
@@ -40,7 +42,7 @@ class ThresholdPolicy implements ImageChangeListener {
   public void receiveImageChangeEvent( ImageChangeEvent event) {
 
     ShareDrawing image = event.getImage();
-    ShareDrawingLine line = event.getLine();
+    DrawingLine line = event.getLine();
 
     if ( event.getType == ImageChangeEvent.AddLine ) {
       heuristic.addLineTo( line, image);

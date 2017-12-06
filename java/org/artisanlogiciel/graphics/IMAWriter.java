@@ -5,10 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import lasnier.sharedraw.ShareDrawingLine;
-
 /**
- * Write a ShareDrawLine (using its internal Vector representation) into IMA format
+ * Write a DrawLine (using its internal Vector representation) into IMA format
  * this is with loss ( ima is a 255x255 point resolution )
  *
  * @author philippe
@@ -16,7 +14,7 @@ import lasnier.sharedraw.ShareDrawingLine;
  */
 public class IMAWriter {
 
-    private final ArrayList<ShareDrawingLine> mLines;
+    private final ArrayList<DrawingLine> mLines;
 
     private int mByteCount = 0;
     // need to compute bounding box and normalize to 255x255
@@ -25,7 +23,7 @@ public class IMAWriter {
     double ratioX = .1;
     double ratioY = .1;
 	
-    public IMAWriter(ArrayList<ShareDrawingLine> pLines)
+    public IMAWriter(ArrayList<DrawingLine> pLines)
     {
 	mLines = pLines;
 	setup();
@@ -59,7 +57,7 @@ public class IMAWriter {
     private void setup()
     {
 	int count = 0;
-	for (ShareDrawingLine line : mLines)
+	for (DrawingLine line : mLines)
 	    {
 		for (Point p : line.getPoints())
 		    {
@@ -97,7 +95,7 @@ public class IMAWriter {
 	// little endian unsigned short.
 	pData.writeByte(mByteCount%256);
 	pData.writeByte(mByteCount/256);	    
-	for (ShareDrawingLine line : mLines)
+	for (DrawingLine line : mLines)
 	    {
 		// write ima line
 		wrote += writeLine(pData, line.getPoints());

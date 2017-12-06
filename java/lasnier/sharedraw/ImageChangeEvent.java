@@ -19,6 +19,8 @@
 
 package lasnier.sharedraw;
 
+import org.artisanlogiciel.graphics.DrawingLine;
+
     class ImageChangeEvent {
 
 	final static int AddLine = 1;
@@ -26,7 +28,7 @@ package lasnier.sharedraw;
 
 	int getType;
 
-	ShareDrawingLine getLine() {
+	DrawingLine getLine() {
 	    return null;
 	}
 

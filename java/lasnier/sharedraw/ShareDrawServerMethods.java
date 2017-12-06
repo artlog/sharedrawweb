@@ -24,10 +24,11 @@
 */
 package lasnier.sharedraw;
 
+import org.artisanlogiciel.graphics.DrawingLine;
 
 public interface ShareDrawServerMethods {
 
-  public void addLine( ShareDrawingLine line) throws lasnier.sharedraw.RemoteException;
+  public void addLine( DrawingLine line) throws lasnier.sharedraw.RemoteException;
 
   public void save( String ref) throws lasnier.sharedraw.RemoteException;
 
@@ -44,7 +45,7 @@ public interface ShareDrawServerMethods {
     lasnier.sharedraw..RemoteException;
     */
 
-  public ShareDrawingLine getLine( int lineindex) throws
+  public DrawingLine getLine( int lineindex) throws
     RemoteException,
     lasnier.sharedraw.DrawException;
 
