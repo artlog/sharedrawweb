@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import org.artisanlogiciel.graphics.DrawingLine;
+import org.artisanlogiciel.graphics.DrawException;
 
 public class ShareDrawServerKompressedAccess
 extends ShareDrawServerAccess {

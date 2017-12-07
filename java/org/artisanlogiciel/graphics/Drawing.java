@@ -12,9 +12,8 @@ import java.io.DataOutputStream;
 import java.util.ArrayList;
 
 import org.artisanlogiciel.graphics.Importer;
-import lasnier.sharedraw.ResetException;
-import lasnier.sharedraw.NoMoreLineException;
-
+import org.artisanlogiciel.graphics.ResetException;
+import org.artisanlogiciel.graphics.NoMoreLineException;
 
 public class Drawing
 {

@@ -26,6 +26,9 @@
 package lasnier.sharedraw;
 
 import org.artisanlogiciel.graphics.DrawingLine;
+import org.artisanlogiciel.graphics.DrawException;
+import org.artisanlogiciel.graphics.ResetException;
+import org.artisanlogiciel.graphics.NoMoreLineException;
 
 public class ShareDrawPoll extends Thread {
 

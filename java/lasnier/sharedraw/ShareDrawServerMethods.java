@@ -25,6 +25,7 @@
 package lasnier.sharedraw;
 
 import org.artisanlogiciel.graphics.DrawingLine;
+import org.artisanlogiciel.graphics.DrawException;
 
 public interface ShareDrawServerMethods {
 
@@ -47,7 +48,7 @@ public interface ShareDrawServerMethods {
 
   public DrawingLine getLine( int lineindex) throws
     RemoteException,
-    lasnier.sharedraw.DrawException;
+    DrawException;
 
 }
 

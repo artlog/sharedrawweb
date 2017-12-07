@@ -17,12 +17,12 @@
 
  */
 
-package lasnier.sharedraw;
+package org.artisanlogiciel.graphics;
 
-import java.io.Serializable;
-
-class DrawException extends Exception implements Serializable {
-  public DrawException() {
+public class ResetException
+    extends DrawException
+{
+  public ResetException() {
     super();
   }
 }

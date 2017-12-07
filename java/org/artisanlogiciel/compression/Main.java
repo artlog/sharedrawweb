@@ -8,8 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.artisanlogiciel.graphics.SvgWriter;
-
-import lasnier.sharedraw.ShareDrawing;
+import org.artisanlogiciel.graphics.Drawing;
 
 /**
  * Very simple utility to convert from .imc to svg.
@@ -17,9 +16,10 @@ import lasnier.sharedraw.ShareDrawing;
  * TODO : could be more clever and not load full image into memory to save it afterwards ( for very small embedded systems ).
  */
 
-public class Main {
+public class Main
+{
 
-	ShareDrawing mLocalImage;
+	Drawing mLocalImage;
 	
 	public static void main(String[] args) {
 		Main m = new Main();
@@ -73,7 +73,7 @@ public class Main {
 	  public void loadExpanded( String ref) {
 	    try {
 	      FileInputStream fi = new FileInputStream( ref);
-	      mLocalImage = new ShareDrawing();
+	      mLocalImage = new Drawing();
 	      mLocalImage.loadLinesExpanded( new DataInputStream( fi));
 	    }
 	    catch( java.io.FileNotFoundException fnfe) {

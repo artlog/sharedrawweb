@@ -39,6 +39,8 @@ import org.artisanlogiciel.graphics.IMAImporter;
 import org.artisanlogiciel.graphics.Importer;
 import org.artisanlogiciel.graphics.IMAWriter;
 import org.artisanlogiciel.graphics.DrawingLine;
+import org.artisanlogiciel.graphics.ResetException;
+import org.artisanlogiciel.graphics.NoMoreLineException;
 
 public class ShareDrawServer implements
 ShareDrawServerMethods, Runnable {

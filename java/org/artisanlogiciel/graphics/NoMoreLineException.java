@@ -17,10 +17,15 @@
 
  */
 
-package lasnier.sharedraw;
+package org.artisanlogiciel.graphics;
 
-public class ResetException extends DrawException {
-  public ResetException() {
+import java.io.Serializable;
+
+public class NoMoreLineException
+    extends DrawException
+    implements Serializable
+{
+  public NoMoreLineException() {
     super();
   }
 }

@@ -34,6 +34,7 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 
 import org.artisanlogiciel.graphics.DrawingLine;
+import org.artisanlogiciel.graphics.DrawException;
 
 public class ShareDrawServerAccess
 implements ShareDrawServerMethods, Runnable {
