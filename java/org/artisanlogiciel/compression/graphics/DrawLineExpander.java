@@ -115,7 +115,7 @@ public class DrawLineExpander {
       // System.out.println( codeval);
       /* 
         for coding/decoding scheme see
-           lasnier.sharedraw.DrawLineKompressor.java 
+           org.artisanlogiciel.graphics.DrawLineKompressor.java 
       */
       if ( size == 3 ) {
         max = 3;
