@@ -1,6 +1,7 @@
 package org.artisanlogiciel.compression;
 
 import java.io.DataInputStream;
+import java.io.OutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +36,11 @@ public class Main
 				}
 				else
 				{
-					m.saveSvg(new DataOutputStream(new FileOutputStream(out)));
+				    //m.saveSvg(new DataOutputStream(new FileOutputStream(out)));
+				    FileOutputStream fout = new FileOutputStream(out);
+				    m.saveSvg(fout);
+				    fout.flush();
+				    fout.close();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -49,7 +54,7 @@ public class Main
 
 	}
 	
-	public void saveSvg(DataOutputStream s)
+	public void saveSvg(OutputStream s)
 	throws IOException
 	{
 		SvgWriter writer = new SvgWriter(mLocalImage.getLines());
