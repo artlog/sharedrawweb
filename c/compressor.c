@@ -26,8 +26,8 @@ int main(int argc, char ** argv)
 {
   if ( argc > 1)
     {
-      struct inputstream input;
-      struct outputstream output;
+      struct alinputstream input;
+      struct aloutputstream output;
       int debug_compressor=0;
       
       struct sdlines sdlines={

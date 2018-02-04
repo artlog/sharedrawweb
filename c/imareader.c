@@ -93,7 +93,7 @@ struct sharedrawing {
 };
 
 struct imaimporter {
-  struct inputstream * mStream;
+  struct alinputstream * mStream;
   bool mBeanOn;
   int mIndex;
   bool mDebug;
@@ -109,19 +109,19 @@ int filename_is_ima(char * filename)
   return 0;
 }
 
-struct inputstream * newInputstream(int fd)
+struct alinputstream * newInputstream(int fd)
 {
-  struct inputstream * stream=malloc(sizeof(struct inputstream));
+  struct alinputstream * stream=malloc(sizeof(struct alinputstream));
   if ( stream != NULL )
     {
-      inputstream_init(stream,fd);
+      alinputstream_init(stream,fd);
     }
   return stream;
 }
 
-unsigned char readUnsignedByte(struct inputstream * stream)
+unsigned char readUnsignedByte(struct alinputstream * stream)
 {
-  return inputstream_readuchar(stream);
+  return alinputstream_readuchar(stream);
 }
 
 struct sharedrawing * newShareDrawing()
@@ -191,7 +191,7 @@ void addLine(struct imaimporter * this, struct sharedrawing * drawing, struct sh
   drawing->lines ++;
 }
 	     
-void imaimporter_init(struct imaimporter * this, struct inputstream * inputStream)
+void imaimporter_init(struct imaimporter * this, struct alinputstream * inputStream)
 {
   this->mStream=inputStream;
   this->mBeanOn=FALSE;
@@ -346,7 +346,7 @@ void dispose_sharedrawing_content(struct sharedrawing * drawing)
     } 
 }
 
-int read_ima(struct inputstream * stream, struct sdlines * lines)
+int read_ima(struct alinputstream * stream, struct sdlines * lines)
 {
   struct imaimporter imaimporter;
   struct sharedrawing drawing;

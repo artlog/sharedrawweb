@@ -22,7 +22,7 @@ void fieldreader_free(struct bitfieldreader * this)
 void fieldreader_nextword(struct bitfieldreader * this)
 {
   // read next word
-  this->currentWord= inputstream_readuint32(this->stream);
+  this->currentWord= alinputstream_readuint32(this->stream);
   this->bitOffset = 0;
 }
 
@@ -36,7 +36,7 @@ void fieldreader_padtoword(struct bitfieldreader * this)
   }
 }
 
-void fieldreader_setinput( struct bitfieldreader * this, struct inputstream * inputstream )
+void fieldreader_setinput( struct bitfieldreader * this, struct alinputstream * inputstream )
 {
   this->stream=inputstream;
 }

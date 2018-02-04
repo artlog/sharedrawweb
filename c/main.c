@@ -30,7 +30,7 @@ int main(int argc, char ** argv)
   if ( argc > 1)
     {
       struct drawlineexpander expander;
-      struct inputstream input;
+      struct alinputstream input;
        struct sdlines sdlines={
 	.lines=0,
 	.first=NULL,	

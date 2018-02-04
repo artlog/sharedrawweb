@@ -94,7 +94,7 @@ void drawlincecompressor_foreach_pointlist(struct pointlist * pointlist, struct 
   adapter->count ++;
 }
 
-void drawlinecompressor_compress( struct drawlinecompressor * this, struct outputstream * output )
+void drawlinecompressor_compress( struct drawlinecompressor * this, struct aloutputstream * output )
 {
   bitfieldwriter_setoutputstream( this->fieldWriter, output);
 
@@ -258,10 +258,10 @@ void drawlinecompressor_writeAbs( struct drawlinecompressor * this,struct sdpoin
 }
 
 
-int drawlinecompressor_write_imc(struct outputstream * output,struct sdlines * sdlines, int debug)
+int drawlinecompressor_write_imc(struct aloutputstream * output,struct sdlines * sdlines, int debug)
 {
   struct drawlinecompressor compressor;
-  outputstream_writeint32(output,sdlines->lines);
+  aloutputstream_writeint32(output,sdlines->lines);
   for (int i=0; i< sdlines->lines; i++)
     {
       if ( debug > 0) { fprintf(stderr, "Line %u/%u\n", (i+1),sdlines->lines); }

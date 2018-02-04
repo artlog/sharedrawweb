@@ -16,8 +16,8 @@ struct drawlinecompressor
 
 void drawlinecompressor_init(struct drawlinecompressor * this, struct pointlist * fromlines);
 
-void drawlinecompressor_compress( struct drawlinecompressor * this, struct outputstream * output );
+void drawlinecompressor_compress( struct drawlinecompressor * this, struct aloutputstream * output );
 
-int drawlinecompressor_write_imc(struct outputstream * output,struct sdlines * sdlines,int debug);
+int drawlinecompressor_write_imc(struct aloutputstream * output,struct sdlines * sdlines,int debug);
 
 #endif

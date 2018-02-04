@@ -72,7 +72,7 @@ void bitfieldwriter_newword(struct bitfieldwriter * this)
 {
   // do really write current word;
   //writeInt( nextWord);
-  outputstream_writeint32(this->stream,this->nextWord);
+  aloutputstream_writeint32(this->stream,this->nextWord);
   // reset nextWord
   this->bitOffset = 0;
   this->nextWord = 0;
@@ -89,7 +89,7 @@ void bitfieldwriter_padtoword(struct bitfieldwriter * this)
 }
 
 /* set OutputStream */
-void bitfieldwriter_setoutputstream(struct bitfieldwriter * this, struct outputstream * output)
+void bitfieldwriter_setoutputstream(struct bitfieldwriter * this, struct aloutputstream * output)
 {
   this->stream = output;
 }

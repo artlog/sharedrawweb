@@ -35,7 +35,7 @@ void adapt_point(struct pointlist * this, struct sdpoint * point, struct sdadapt
 }
 
 
-int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct inputstream * input,struct sdlines * sdlines)
+int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct alinputstream * input,struct sdlines * sdlines)
 {
   int      readok = 0;
   struct sdpoint min, max;
@@ -60,7 +60,7 @@ int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct inputst
   };
 
   int debug=this->debug;
-  int lines = inputstream_readuint32(input);
+  int lines = alinputstream_readuint32(input);
   int expectedpoints = EXPECTEDPOINTS;
   if (lines < 10000)
     {

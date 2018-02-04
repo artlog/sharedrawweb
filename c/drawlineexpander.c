@@ -32,7 +32,7 @@ struct sdpoint * drawlineexpander_readAbs(struct drawlineexpander *this, int siz
 struct sdpoint * drawlineexpander_readRel(struct drawlineexpander *this);
   
 /* create a Vector of points */
-struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struct inputstream * input )
+struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struct alinputstream * input )
 {
   struct pointlist * expandedLines = this->expandedLines;
   struct sdpoint * point;

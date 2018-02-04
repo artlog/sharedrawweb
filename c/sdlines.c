@@ -3,7 +3,7 @@
 #include <string.h>
 #include "sdlines.h"
 #include "alcommon.h"
-#include "todo.h"
+#include "altodo.h"
 
 void set_vector( float v[3], struct sdpoint * point, struct sdadapter * adapter)
 {

@@ -1,8 +1,8 @@
-#include "inputstream.h"
+#include "alinput.h"
 
 struct bitfieldreader {
   int read;
-  struct inputstream *stream;
+  struct alinputstream *stream;
   int dataSize;
   int bitOffset;
   int currentWord;
@@ -15,4 +15,4 @@ void fieldreader_init(struct bitfieldreader * this);
 /* value returned is an int between 0 and 2^bits-1 */
 int fieldreader_read( struct bitfieldreader * this, int bits );
 
-void fieldreader_setinput( struct bitfieldreader * this, struct inputstream * inputstream );
+void fieldreader_setinput( struct bitfieldreader * this, struct alinputstream * inputstream );

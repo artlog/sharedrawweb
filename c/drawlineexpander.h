@@ -20,6 +20,6 @@ void drawlineexpander_init( struct drawlineexpander * this, int initialsize );
 
 void drawlineexpander_release( struct drawlineexpander * this);
 
-struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struct inputstream * input );
+struct pointlist * drawlineexpander_expand( struct drawlineexpander *this, struct alinputstream * input );
 
 #endif

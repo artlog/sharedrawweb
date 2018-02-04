@@ -7,7 +7,7 @@
 **/
 
 struct dump_sdlines_data {
-  struct outputstream * stream;
+  struct aloutputstream * stream;
   struct sdlines_matrix6 transform;
   int debug;
   int bytes;
@@ -26,7 +26,7 @@ void write_ima_collect(struct sdlines * this, struct sdlines_iterator_callback *
 void write_ima_content_ref_header(struct sdlines * this, struct sdlines_iterator_callback * callback, void * data)
 {
   struct dump_sdlines_data * sdlines_data =  (struct dump_sdlines_data *) data;
-  struct outputstream * stream = sdlines_data->stream;
+  struct aloutputstream * stream = sdlines_data->stream;
   if (stream->debug)
     {
       printf("{\"count\":%i",this->lines);
@@ -39,7 +39,7 @@ void write_ima_content_ref_header(struct sdlines * this, struct sdlines_iterator
 void write_ima_content_ref(struct sdlines * this, struct sdlines_iterator_callback * callback, struct vectlist * line, int index, struct vectlist * next, void * data)
 {
   struct dump_sdlines_data * sdlines_data =  (struct dump_sdlines_data *) data;
-  struct outputstream * stream = sdlines_data->stream;
+  struct aloutputstream * stream = sdlines_data->stream;
   float* v;
   XPoint dest;
   v=&line->vector[0][0];
@@ -98,7 +98,7 @@ struct sdlines_iterator_callback write_ima_callback_content_ref = {
   .f_after=write_ima_content_ref_footer
 };
 
-int write_ima(struct outputstream * stream, struct sdlines * lines)
+int write_ima(struct aloutputstream * stream, struct sdlines * lines)
 {
   struct dump_sdlines_data  write_ima_data;
   write_ima_data.stream = stream;

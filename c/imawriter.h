@@ -3,8 +3,8 @@
 
 #include "imacommon.h"
 #include "sdlines.h"
-#include "outputstream.h"
+#include "aloutput.h"
 
-int write_ima(struct outputstream * stream, struct sdlines * lines);
+int write_ima(struct aloutputstream * stream, struct sdlines * lines);
 
 #endif
