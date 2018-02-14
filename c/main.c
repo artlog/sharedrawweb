@@ -68,7 +68,7 @@ int main(int argc, char ** argv)
 	{
 	  int readok = 0;
 	  
-	  inputstream_init(&input, fd);
+	  alinputstream_init(&input, fd);
 	  input.debug=1;
 
 	  if ( filename_is_ima(inputfilename) )

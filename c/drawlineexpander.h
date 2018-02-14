@@ -1,7 +1,7 @@
 #ifndef _DRAWLINEEXPANDER_H_
 #define _DRAWLINEEXPANDER_H_
 
-#include "fieldreader.h"
+#include "albitfieldreader.h"
 #include "drawlinecommon.h"
 
 struct drawlineexpander

@@ -1,7 +1,7 @@
 #ifndef _DRAWLINECOMPRESSOR_H_
 #define _DRAWLINECOMPRESSOR_H_
 
-#include "bitfieldwriter.h"
+#include "albitfieldwriter.h"
 #include "drawlinecommon.h"
 #include "sdlines.h"
 

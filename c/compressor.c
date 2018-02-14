@@ -45,7 +45,7 @@ int main(int argc, char ** argv)
 	}
       else
 	{
-	  printf("missing an argument %s\n","output file");
+	  aldebug_printf(NULL,"missing an argument %s\n","output file");
 	  usage();
 	  exit(1);
 	}
@@ -55,25 +55,22 @@ int main(int argc, char ** argv)
       FILE * file = fopen( inputfilename, "r");
       if ( file != NULL )
 	{
-	  int readok = 0;
-	  
-	  inputstream_init(&input, fileno(file));
+	  alinputstream_init(&input, fileno(file));
 	  input.debug=debug_compressor;
 
 	  if ( filename_is_ima(inputfilename) )
 	    {
-	      printf("Ima file detected '%s'\n", inputfilename);
+	      aldebug_printf(NULL,"Ima file detected '%s'\n", inputfilename);
 	      read_ima( &input, &sdlines);
-	      readok = 1;
 
 	      char * checkima = "check.ima";
 	      FILE * genfile = fopen( checkima, "w");
 	      if ( genfile == NULL )
 		{
-		  fprintf(stderr,"[ERROR] can't create %s\n", checkima );
+		  aldebug_printf(NULL,"[ERROR] can't create %s\n", checkima );
 		  exit(1);
 		}
-	      outputstream_init(&output,genfile);
+	      aloutputstream_init(&output,genfile);
 	      write_ima(&output,&sdlines);
 	      fflush(genfile);
 	      fclose(genfile);
@@ -89,16 +86,15 @@ int main(int argc, char ** argv)
 	    FILE * genfile = fopen( varname, "w");
 	    if ( genfile == NULL )
 	      {
-		fprintf(stderr,"[ERROR] can't create %s\n", varname);
+		aldebug_printf(NULL,"[ERROR] can't create %s\n", varname);
 		exit(1);
 	      }	    
-	    outputstream_init(&output,genfile);
-	    if ( ! drawlinecompressor_write_imc(&sdlines,&output,debug_compressor))
+	    aloutputstream_init(&output,genfile);
+	    if ( ! drawlinecompressor_write_imc(&output,&sdlines,debug_compressor))
 	      {
 		exit(1);
 	      }
 	    fclose(genfile);
-	    readok = 1;
 	  }
 	  fclose(file);
 	}

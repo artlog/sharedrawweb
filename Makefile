@@ -8,8 +8,8 @@ CPPFLAGS=-g
 
 BUILD=build
 
-libsrcexp=c/fieldreader.c c/drawlineexpander.c c/imareader.c
-libsrccomp=c/bitfieldwriter.c c/drawlinecompressor.c  c/imawriter.c
+libsrcexp=c/drawlineexpander.c c/imareader.c
+libsrccomp=c/drawlinecompressor.c  c/imawriter.c
 
 libsrc=c/drawlinecommon.c c/pointlist.c c/sdpoint.c c/sdlines.c c/drawlinetools.c $(libsrcexp) $(libsrccomp)
 
