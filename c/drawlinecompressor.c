@@ -12,8 +12,7 @@ void drawlinecompressor_init( struct drawlinecompressor * this, struct pointlist
 {
   memset(this,0, sizeof(*this));
   this->fromLines=fromlines;
-  this->fieldWriter = new_bitfieldwriter();
-  bitfieldwriter_init(this->fieldWriter);
+  bitfieldwriter_init(&this->fieldWriter);
   this->debug=0;
 }
 
@@ -24,13 +23,13 @@ void drawlinecompressor_writeRel(struct drawlinecompressor * this, struct sdpoin
 void drawlincecompressor_before_pointlist(struct pointlist * pointlist, struct sdadapter * adapter, int count)
 {
   struct drawlinecompressor * this = (struct drawlinecompressor *) adapter->data;
-  bitfieldwriter_write( this->fieldWriter, count, 32);
+  bitfieldwriter_write( &this->fieldWriter, count, 32);
 }
 
 void drawlincecompressor_after_pointlist(struct pointlist * pointlist, struct sdadapter * adapter)
 {
   struct drawlinecompressor * this = (struct drawlinecompressor *) adapter->data;
-  bitfieldwriter_padtoword( this->fieldWriter);
+  bitfieldwriter_padtoword( &this->fieldWriter);
 }
 
 void drawlincecompressor_foreach_pointlist(struct pointlist * pointlist, struct sdpoint * point, struct sdadapter * adapter)
@@ -96,7 +95,7 @@ void drawlincecompressor_foreach_pointlist(struct pointlist * pointlist, struct 
 
 void drawlinecompressor_compress( struct drawlinecompressor * this, struct aloutputstream * output )
 {
-  bitfieldwriter_setoutputstream( this->fieldWriter, output);
+  bitfieldwriter_setoutputstream( &this->fieldWriter, output);
 
   /*
   int skipsame=0;
@@ -165,13 +164,13 @@ void drawlinecompressor_writeRel(struct drawlinecompressor * this,struct sdpoint
          if ( ((SCODE_MAX - cindex) + pindex ) > ( pindex - cindex ) ) {
            // ( pindex - cindex ) times next
            for ( ; pindex < cindex; pindex ++) {
-             bitfieldwriter_write(this->fieldWriter, SCODE_NEXT,2);
+             bitfieldwriter_write(&this->fieldWriter, SCODE_NEXT,2);
            }
          }
          else {
            // ((SCODE_MAX -cindex) + pindex ) fois previous
            for ( pindex = SCODE_MAX - cindex + pindex; pindex > 0; pindex --) {
-             bitfieldwriter_write(this->fieldWriter, SCODE_PREVIOUS,2);
+             bitfieldwriter_write(&this->fieldWriter, SCODE_PREVIOUS,2);
            }
          }
       }
@@ -184,20 +183,20 @@ void drawlinecompressor_writeRel(struct drawlinecompressor * this,struct sdpoint
          if ( ((SCODE_MAX - pindex) + cindex ) > cindex - pindex ) {
            // ( cindex - pindex ) times previous
            for ( ; cindex < pindex; pindex --) {
-             bitfieldwriter_write(this->fieldWriter, SCODE_PREVIOUS,2);
+             bitfieldwriter_write(&this->fieldWriter, SCODE_PREVIOUS,2);
            }
          }
          else {
            // ((SCODE_MAX - pindex) + cindex ) times next
            for ( pindex = SCODE_MAX - pindex + cindex; pindex > 0; pindex --)
            {
-             bitfieldwriter_write(this->fieldWriter, SCODE_NEXT,2);
+             bitfieldwriter_write(&this->fieldWriter, SCODE_NEXT,2);
            }
          }
       }
     }  
     // this is good size.
-    bitfieldwriter_write(this->fieldWriter,  0,1);
+    bitfieldwriter_write(&this->fieldWriter,  0,1);
     drawlinecompressor_writeAbs(this, point, size);
   }
 
@@ -210,8 +209,8 @@ void drawlinecompressor_writeAbs( struct drawlinecompressor * this,struct sdpoin
     this->previousSize = size;
 
     if ( size > 32 ) {
-      bitfieldwriter_write(this->fieldWriter,  point->x, 32);
-      bitfieldwriter_write(this->fieldWriter,  point->y, 32);
+      bitfieldwriter_write(&this->fieldWriter,  point->x, 32);
+      bitfieldwriter_write(&this->fieldWriter,  point->y, 32);
     }
     else {
 	int nocenter= FALSE;
@@ -253,7 +252,7 @@ void drawlinecompressor_writeAbs( struct drawlinecompressor * this,struct sdpoin
 	      codeval --;
 	  }
       }
-      bitfieldwriter_write(this->fieldWriter,  codeval, size);
+      bitfieldwriter_write(&this->fieldWriter,  codeval, size);
     }
 }
 

@@ -9,7 +9,7 @@ struct drawlinecompressor
 {
   struct pointlist *fromLines;
   int previousSize;
-  struct bitfieldwriter * fieldWriter;
+  struct bitfieldwriter fieldWriter;
   int debug;
   struct sdpoint * frompoint;
 };
