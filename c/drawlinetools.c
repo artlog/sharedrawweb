@@ -39,6 +39,11 @@ int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct alinput
 {
   int      readok = 0;
   struct sdpoint min, max;
+
+  min.x =0;
+  min.y =0;
+  max.x = 1024;
+  max.y = 1024;
   
   struct sdadapter adapter={
     /*
@@ -85,7 +90,7 @@ int drawlineexpander_read_sdlines( struct drawlineexpander *this, struct alinput
     }
   else
     {
-      fprintf(stderr, "Too many lines %xh", lines);
+      fprintf(stderr, "Too many lines %xh\n", lines);
     }
   return readok;
 }
